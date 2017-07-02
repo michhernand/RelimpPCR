@@ -6,7 +6,7 @@ This package performs PCA dimensionality reduction in the context of a linear re
 An alternative method, optimized for a regression against Y, is to use both PCA and a relative importance measure. This package applies PCA to a given data frame of X values, and then calculates the relative importance of each PCA factor against Y. It outputs ordered factors that are optimized for model fit. By performing dimensionality reduction with this method, an individual can achieve a the same r-squraed value as performing just PCA, but with fewer predictors.
 
 ## Installation
-In a shell / command prompt build the package with "R CMD build RelimpPCR" (from the directory above "RelimpPCR")
+In a shell / command prompt build the package with "R CMD build RelimpPCR" (from the directory above "RelimpPCR")  
 In a shell / command prompt install the package with "R CMD INSTALL RelimpPCR" (from the directory above "RelimpPCR")
 
 ## Use
