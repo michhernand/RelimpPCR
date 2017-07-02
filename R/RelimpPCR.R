@@ -1,3 +1,36 @@
+#' A Relative Importance PCA Regression Function
+#' 
+#' This function performs a relative importance PCA regression. It performs PCA and then applys a relative
+#' importnace measure on each additional factor. The output shows optimal PCA factor selection for a given
+#' regression.
+#' @param Y (list/vector): This a list/vector of Y values for the regression.
+#' @param X (data frame): This is the input data for the regression.
+#' @param relimp_algorithm (string): This is the "type" of relative importance that will be used for measuring
+#' raw predictors (not PCA factors).
+#' @param max_predictors (int): The maximum number of predictors/factors you want reviewed. Note: For importance
+#' measures all predictors/factors will be analyzed for relative importance. Rather, this limits how many
+#' predictors/factors are added onto the model to show iteratively increasing R-Suared.
+#' @param plot (bool): Whether or not to plot the r-squared values. Default is TRUE.
+#' @param verbose (bool): Whether or not to include some additional narration around the status of the process.
+#' Default is FALSE.
+#' @param multicore (bool): Whether or not to use mclapply instead of sapply. Default is TRUE.
+#' @return out (list): A list containing all of the below components...
+#' @return $pca_factors: the pca factors
+#' @return $pca_loadings the pca loadings
+#' @return $pca_ordered_factors: the ordered pca factors; These factors should provide optimal model fits in 
+#' dimensionality reduction.
+#' @return $ordered_predictors: the ordered predictors; These factors provide suboptimal model fits in comparison
+#' to ordered pca factors in the case of dimensionality reduction.
+#' @return $original_r2: a vector showing the evolution of r-squared when adding one predictor at a time for the
+#' original unordered predictors.
+#' @return $pca_r2: a vector showing the evolution of r-squared when adding one pca factor at a time for the original
+#' unordered pca factors.
+#' @return $relimp_r2: a vector showing the evolution of r-squared when adding one predictor at a time for the ordered
+#' predictors.
+#' @return $relimp_pca_r2: a vector the evolution of r-squared when adding one pca factor at a time for the ordered
+#' pca factors.
+#' 
+#' **(Suboptimal)**, e) a vector of r-squared values when adding one predictor at a time ("") **(Suboptimal)**
 RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,plot=T,verbose=F,multicore=T){
   suppressMessages(require(relaimpo))
   suppressMessages(require(parallel))
@@ -64,7 +97,7 @@ RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,plot=T,verbose
   }
       
     
-  out = list("pca_factors" = pca_factors, "pca_loadings" = pca_loadings, "pca_ordered_predictors" = pca_ordered_predictors, "ordered_predictors" = ordered_predictors,
+  out = list("pca_factors" = pca_factors, "pca_loadings" = pca_loadings, "pca_ordered_factors" = pca_ordered_predictors, "ordered_predictors" = ordered_predictors,
              "original_r2" = original_r2, "pca_r2" = pca_r2, "relimp_pca_r2" = pca_relimp_r2, "relimp_r2" = relimp_r2)
   
   if(verbose){
