@@ -1,5 +1,8 @@
 # RelimpPCR - Relative Importance PCA Regression
 
+## Acknowledgements
+The concepts and ideas used to create this package/code were learned from Yuri Balasanov at the University of Chicago Master of Science in Analytics Program.
+
 ## Description
 This package performs PCA dimensionality reduction in the context of a linear regression. In most cases, PCA dimensionality reduction is performed independent of the Y values for a regression. This captures the majority of the variance of the X values, but may not actually be the optimal dimensionality reduction solution for a regression against Y.  
 
