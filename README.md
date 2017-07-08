@@ -12,5 +12,8 @@ In a shell / command prompt install the package with "R CMD INSTALL RelimpPCR" (
 ## Use
 After importing the package, you can use the "RelimpPCR()" function to perform a relative importance PCA regression.
 
+## Example
+Note in the below example that RelimpPCR achieves higher r-squared values faster than any other method.
+
 *Example of RelimpPCR on mtcars data*  
 ![image](https://raw.github.com/mhernan88/RelimpPCR/master/repo_files/RelimpPCR_Plot.png "Example of RelimpPCR on mtcars data")
