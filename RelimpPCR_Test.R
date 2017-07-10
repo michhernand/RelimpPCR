@@ -1,6 +1,6 @@
 require(RUnit)
 
-source(RelimpPCR.R)
+source(./R/RelimpPCR.R)
 
 test.RelimpPCR <- function() {
   set.seed(8394756)
