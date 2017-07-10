@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mhernan88/RelimpPCR.svg?branch=master)](https://travis-ci.org/mhernan88/RelimpPCR)
 # RelimpPCR - Relative Importance PCA Regression
 
 ## Acknowledgements
