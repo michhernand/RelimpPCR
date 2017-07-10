@@ -30,11 +30,9 @@
 #' predictors.
 #' @return $relimp_pca_r2: a vector the evolution of r-squared when adding one pca factor at a time for the ordered
 #' pca factors.
-#' 
+#' @export
 
 RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,normalize_data=T,plot=T,verbose=F,multicore=T){
-  suppressMessages(require(relaimpo))
-  suppressMessages(require(parallel))
   if(verbose){
     print(paste0(Sys.time()," | Ranking predictors against Y using calc.relimp ",relimp_algorithm))
   }
@@ -69,7 +67,7 @@ RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,normalize_data
   
   #PCA Ranking
   pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factors))
-  pca_relimp_factors = calc.relimp(pca_fit,type="last")
+  pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
   pca_ranked_factors = pca_relimp_factors@last.rank
   pca_ordered_predictors = pca_factors[,order(pca_ranked_factors)]
 
@@ -88,10 +86,10 @@ RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,normalize_data
   }
 
   if(multicore==T){
-    original_r2 = unlist(mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,X[,1:z])))$r.squared))
-    relimp_r2 = unlist(mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,ordered_predictors[,1:z])))$r.squared))
-    pca_r2 = unlist(mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,pca_factors[,1:z])))$r.squared))
-    pca_relimp_r2 = unlist(mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~., data = data.frame(Y=Y,pca_ordered_predictors[,1:z])))$r.squared))
+    original_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,X[,1:z])))$r.squared))
+    relimp_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,ordered_predictors[,1:z])))$r.squared))
+    pca_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,pca_factors[,1:z])))$r.squared))
+    pca_relimp_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~., data = data.frame(Y=Y,pca_ordered_predictors[,1:z])))$r.squared))
   } else {
     original_r2 = sapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,X[,1:z])))$r.squared)
     relimp_r2 = sapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,ordered_predictors[,1:z])))$r.squared)

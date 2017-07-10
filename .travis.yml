@@ -1,0 +1,9 @@
+language: r
+r:
+    - release
+cache: packages
+
+script:
+    - R CMD build .
+    - R CMD check *tar.gz
+    - Rscript ./RelimpPCR_Test.R
