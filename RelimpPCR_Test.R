@@ -1,3 +1,4 @@
+install.packages("RUnit")
 require(RUnit)
 
 source("./R/RelimpPCR.R")
