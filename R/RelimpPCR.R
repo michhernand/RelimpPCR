@@ -10,6 +10,15 @@
 #' @param max_predictors (int): The maximum number of predictors/factors you want reviewed. Note: For importance
 #' measures all predictors/factors will be analyzed for relative importance. Rather, this limits how many
 #' predictors/factors are added onto the model to show iteratively increasing R-Suared.
+#' @param remove_factors (bool): If any eigenvalue, resulting from performing PCA on your data set, is too small for relative
+#' importance, it can be removed automatically if this is TRUE. If FALSE, the same situation will produce an error.
+#' @param factors_to_remove (int): If remove_factors is TRUE, you can either a) set this to 0 to have the script iteratively
+#' remove PCA factors until the relative importance calculation works (recommended if you do not know how many PCA factors to
+#' remove, but takes longer), or b) set this to any positive integer smaller than the number of factors. In condition b, the
+#' script will go ahead and remove the X smallest factors (X being the number this argument is set to).
+#' @param max_factors_to_remove (int): If remove_factors is TRUE and factors_to_remove is 0, then this will determine how many
+#' factors the script will delete before "giving up". This is to prevent a possible very long process. This can be set to 0
+#' to iterate through all columns (not recommended).
 #' @param normalize_data (bool): Whether or not to normalize (subtract mean and divide by standard deviation) before analysis.
 #' @param plot (bool): Whether or not to plot the r-squared values. Default is TRUE.
 #' @param verbose (bool): Whether or not to include some additional narration around the status of the process.
@@ -32,7 +41,7 @@
 #' pca factors.
 #' @export
 
-RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,normalize_data=T,plot=T,verbose=F,multicore=T){
+RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,remove_factors=T,factors_to_remove=0,max_factors_to_remove=15,normalize_data=T,plot=T,verbose=F,multicore=T){
   if(verbose){
     print(paste0(Sys.time()," | Ranking predictors against Y using calc.relimp ",relimp_algorithm))
   }
@@ -65,18 +74,48 @@ RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,normalize_data
     print(paste0(Sys.time()," | Ranking PCA factors against Y using calc.relimp"))
   }
   
+  if(max_factors_to_remove == 0){
+    max_factors_to_remove = ncol(pca_factors)
+  }
+  
   #PCA Ranking
-  pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factors))
-  pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
+  if(remove_factors == T){
+    if(factors_to_remove == 0){
+      for(x in 0:max_factors_to_remove){
+        pca_factor_subset = pca_factors[,1:(ncol(pca_factors) - x)]
+        pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factor_subset))
+        try({
+          pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
+          print(paste0(Sys.time()," | PCA factor relative importance calculation successful; Removed ",x," PCA factor(s)"))
+          break
+        })
+        
+        print(paste0(Sys.time()," | ERROR in calculating relative importance of PCA factors; Removing last ",x," PCA factor(s)"))
+        if(x == max_factors_to_remove){
+          stop("Could not create non-singular matrix. Try increasing max_factors_to_remove.")
+        }
+      }
+    } else {
+      pca_factor_subset = pca_factors[,1:(ncol(pca_factors) - factors_to_remove)]
+      pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factor_subset))
+      pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
+      print(paste0(Sys.time()," | Removed ",factors_to_remove," PCA factor(s)."))
+    }
+  } else {
+    pca_factor_subset = pca_factors
+    pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factor_subset))
+    pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
+  }
+  
   pca_ranked_factors = pca_relimp_factors@last.rank
   pca_ordered_predictors = pca_factors[,order(pca_ranked_factors)]
 
-  if(max_predictors > dim(X)[2]){
-    stop("ERROR: You cannot have 'max_predictors' be greater than the total number of predictors in your data set.")
+  if(max_predictors > dim(pca_factor_subset)[2]){
+    stop("ERROR: You cannot have 'max_predictors' be greater than the total number of remaining PCA factors.")
   }
     
   if(max_predictors <= 0){
-    predictors_range = 1:dim(X)[2]
+    predictors_range = 1:dim(pca_factor_subset)[2]
   } else {
     predictors_range = 1:max_predictors
   }
