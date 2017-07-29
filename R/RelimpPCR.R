@@ -153,14 +153,15 @@ RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_al
   pr("Iteratively adding predictors according to order/ranking for...",verbose)
 
   get_r2s = function(z,trainX,trainY,testX,testY){
+    #browser()
     if(z == 1){
-      trainX_df = trainX[,1:z]
-      testX_df = testX[,1:z]
+      trainX_df = data.frame(trainX[,1:z])
+      testX_df = data.frame(testX[,1:z])
       colnames(trainX_df) = "X1"
       colnames(testX_df) = "X1"
     } else {
-      trainX_df = trainX[,1:z]
-      testX_df = testX[,1:z]
+      trainX_df = data.frame(trainX[,1:z])
+      testX_df = data.frame(testX[,1:z])
     }
     this_fit = caret::train(x = trainX_df,y = trainY,method="lm")
     
@@ -188,7 +189,7 @@ RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_al
     pr("PCA Factors",verbose)
     pca_r2 = parallel::mclapply(X = predictors_range, FUN = get_r2s,trainX=trainX_PCA,trainY=trainY,testX=testX_PCA,testY=testY)
     pr("Ordered PCA Factors",verbose)
-    pca_relimp_r2 = parallel::mclapply(X = predictors_range, FUN = getr2s,trainX = trainX_PCA_ordered,trainY=trainY,testX=testX_PCA_ordered,testY=testY)
+    pca_relimp_r2 = parallel::mclapply(X = predictors_range, FUN = get_r2s,trainX = trainX_PCA_ordered,trainY=trainY,testX=testX_PCA_ordered,testY=testY)
   } else {
     pr("Original Features",verbose)
     original_r2 = lapply(X = predictors_range, FUN = get_r2s,trainX=trainX,trainY=trainY,testX=testX,testY=testY)
@@ -197,7 +198,7 @@ RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_al
     pr("PCA Factors",verbose)
     pca_r2 = lapply(X = predictors_range, FUN = get_r2s,trainX=trainX_PCA,trainY=trainY,testX=testX_PCA,testY=testY)
     pr("Ordered PCA Factors",verbose)
-    pca_relimp_r2 = lapply(X = predictors_range, FUN = getr2s,trainX = trainX_PCA_ordered,trainY=trainY,testX=testX_PCA_ordered,testY=testY)
+    pca_relimp_r2 = lapply(X = predictors_range, FUN = get_r2s,trainX = trainX_PCA_ordered,trainY=trainY,testX=testX_PCA_ordered,testY=testY)
   }
     
   r2_values = list("original_r2"=original_r2,"relimp_r2"=relimp_r2,"pca_r2"=pca_r2,"pca_relimp_r2"=pca_relimp_r2)
@@ -221,12 +222,13 @@ RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_al
   
   if(plot_this==T){
     par(mfrow=c(1,2))
-    plot(predictions_range,cbind(r2_values_out[["original_r2_train"]],r2_values_out[["relimp_r2_train"]],r2_values_out[["pca_r2_train"]],r2_values_out[["pca_relimp_r2_train"]]),
-         type="l",lty=1,lwd=2,col=c("black","red","green","blue"),main="Improvement of Fit with Number of Predictors (Training)", xlab = "Number of Predictors",
+    browser()
+    plot(predictors_range,cbind(r2_values_out[["original_r2_train"]],r2_values_out[["relimp_r2_train"]],r2_values_out[["pca_r2_train"]],r2_values_out[["pca_relimp_r2_train"]]),
+         type="l",lty=1,lwd=2,col=c("black","red","green","blue"),main="Improvement of Fit with Number of Predictors (Train)", xlab = "Number of Predictors",
          ylab = "Determination Coefficient")
     
-    plot(predictions_range,cbind(r2_values_out[["original_r2_test"]],r2_values_out[["relimp_r2_test"]],r2_values_out[["pca_r2_test"]],r2_values_out[["pca_relimp_r2_test"]]),
-         type="l",lty=1,lwd=2,col=c("black","red","green","blue"),main="Improvement of Fit with Number of Predictors (Testing)", xlab = "Number of Predictors",
+    plot(predictors_range,cbind(r2_values_out[["original_r2_test"]],r2_values_out[["relimp_r2_test"]],r2_values_out[["pca_r2_test"]],r2_values_out[["pca_relimp_r2_test"]]),
+         type="l",lty=1,lwd=2,col=c("black","red","green","blue"),main="Improvement of Fit with Number of Predictors (Test)", xlab = "Number of Predictors",
          ylab = "Determination Coefficient")
     legend("bottomright",legend=c("Original","PCA","Relimp","PCA w/ Relimp"),lty=1,lwd=2,col=c("black","red","green","blue"))
   }
