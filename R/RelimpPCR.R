@@ -5,6 +5,11 @@
 #' regression.
 #' @param Y (list/vector): This a list/vector of Y values for the regression.
 #' @param X (data frame): This is the input data for the regression.
+#' @param target_r2 (float 0-1): The algorithm will attempt to return to you the simplest model (i.e. with fewest predictors) that satisfies
+#' your target_r2 value; If no model satisfies this condition, then the full model (with all predictors) will be returned.
+#' @param r2_type (string "train" or "test): This defines which r-squared value the target_r2 argument will evaluate.
+#' @param validation_split (float 0-1): This determines how much of your data set will be in the train data set. The remainder will be
+#' allocated to the test data set. If set to 1, train and test samples will be identical.
 #' @param relimp_algorithm (string): This is the "type" of relative importance that will be used for measuring
 #' raw predictors (not PCA factors).
 #' @param max_predictors (int): The maximum number of predictors/factors you want reviewed. Note: For importance
@@ -41,11 +46,16 @@
 #' pca factors.
 #' @export
 
-RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,remove_factors=T,factors_to_remove=0,max_factors_to_remove=15,normalize_data=T,plot=T,verbose=F,multicore=T){
-  if(verbose){
-    print(paste0(Sys.time()," | Ranking predictors against Y using calc.relimp ",relimp_algorithm))
-  }
+RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_algorithm="last",
+                     max_predictors=0,remove_factors=T,factors_to_remove=0,max_factors_to_remove=15,
+                     normalize_data=T,plot_this=T,verbose=F,multicore=T){
   
+  pr = function(prompt,verbose){
+    if(verbose){
+      print(paste0(Sys.time()," | ",prompt))
+    }
+  }
+
   if(normalize_data == F){
     warning("WARN: Using non-normalized data in PCA can cause sub-optimal results.")
   } else{
@@ -54,61 +64,81 @@ RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,remove_factors
     }
     Y = scale(Y)
   }
-
-  #Ranking
-  fit = lm(Y~.,data = data.frame(Y= unlist(Y),X))
-  relimp_factors = calc.relimp(fit,type="last")
-  ranked_factors = relimp_factors@last.rank
-  ordered_predictors = X[,order(ranked_factors)]
   
-  if(verbose){
-    print(paste0(Sys.time()," | Running PCA"))
-  }
+
+  pr("Running PCA",verbose)
   
   #PCA
   pca = prcomp(X)
   pca_factors = pca$x
   pca_loadings = pca$rotation
   
-  if(verbose){
-    print(paste0(Sys.time()," | Ranking PCA factors against Y using calc.relimp"))
+  if(validation_split == 1){
+    trainX = X; testX = X
+    trainY = Y; testY = Y
+    trainX_PCA = pca; testX_PCA = pca
+  } else if (validation_split <= 0) {
+    stop("Validation split cannot be 0 or negative.")
+  } else if (validation_split > 1) {
+    stop("Validation split cannot be greater than 1.")
+  } else {
+    pr("Performing Train/Test Split",verbose)
+    
+    ix = sample(x = 1:dim(X)[1],size = round(dim(X)[1] * validation_split,0))
+    trainX = X[ix,]; testX = X[-ix,]
+    trainY = Y[ix]; testY = Y[-ix]
+    trainX_PCA = pca_factors[ix,]; testX_PCA = pca_factors[-ix,]
   }
+
+    pr(paste0("Ranking predictors against Y using calc.relimp ",relimp_algorithm),verbose)
+  
+  #Ranking Features
+  fit = lm(Y~.,data = data.frame(Y= unlist(trainY),trainX))
+  relimp_factors = relaimpo::calc.relimp(fit,type="last")
+  ranked_factors = relimp_factors@last.rank
+  
+  trainX_ordered = trainX[,order(ranked_factors)]
+  testX_ordered = testX[,order(ranked_factors)]
+  
+
+  pr("Ranking PCA factors against Y using calc.relimp",verbose)
   
   if(max_factors_to_remove == 0){
-    max_factors_to_remove = ncol(pca_factors)
+    max_factors_to_remove = ncol(trainX_PCA)
   }
   
   #PCA Ranking
   if(remove_factors == T){
     if(factors_to_remove == 0){
       for(x in 0:max_factors_to_remove){
-        pca_factor_subset = pca_factors[,1:(ncol(pca_factors) - x)]
-        pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factor_subset))
+        pca_factor_subset = trainX_PCA[,1:(ncol(trainX_PCA) - x)]
+        pca_fit = lm(Y~.,data = data.frame(Y = unlist(trainY),pca_factor_subset))
         try({
           pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
-          print(paste0(Sys.time()," | PCA factor relative importance calculation successful; Removed ",x," PCA factor(s)"))
+          pr(paste0("PCA factor relative importance calculation successful; Removed ",x," PCA factor(s)"),TRUE)
           break
         })
         
-        print(paste0(Sys.time()," | ERROR in calculating relative importance of PCA factors; Removing last ",x," PCA factor(s)"))
+        pr(paste0("ERROR in calculating relative importance of PCA factors; Removing last ",x," PCA factor(s)"),TRUE)
         if(x == max_factors_to_remove){
           stop("Could not create non-singular matrix. Try increasing max_factors_to_remove.")
         }
       }
     } else {
-      pca_factor_subset = pca_factors[,1:(ncol(pca_factors) - factors_to_remove)]
-      pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factor_subset))
+      pca_factor_subset = trainX_PCA[,1:(ncol(trainX_PCA) - factors_to_remove)]
+      pca_fit = lm(Y~.,data = data.frame(Y = unlist(trainY),pca_factor_subset))
       pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
-      print(paste0(Sys.time()," | Removed ",factors_to_remove," PCA factor(s)."))
+      pr(paste0("Removed ",factors_to_remove," PCA factor(s)."))
     }
   } else {
-    pca_factor_subset = pca_factors
-    pca_fit = lm(Y~.,data = data.frame(Y = unlist(Y),pca_factor_subset))
+    pca_factor_subset = trainX_PCA
+    pca_fit = lm(Y~.,data = data.frame(Y = unlist(trainY),pca_factor_subset))
     pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
   }
   
   pca_ranked_factors = pca_relimp_factors@last.rank
-  pca_ordered_predictors = pca_factors[,order(pca_ranked_factors)]
+  trainX_PCA_ordered = trainX_PCA[,order(pca_ranked_factors)]
+  testX_PCA_ordered = testX_PCA[,order(pca_ranked_factors)]
 
   if(max_predictors > dim(pca_factor_subset)[2]){
     stop("ERROR: You cannot have 'max_predictors' be greater than the total number of remaining PCA factors.")
@@ -120,36 +150,96 @@ RelimpPCR = function(Y,X,relimp_algorithm="last",max_predictors=0,remove_factors
     predictors_range = 1:max_predictors
   }
   
-  if(verbose){
-    print(paste0(Sys.time()," | Iteratively adding predictors according to order/ranking"))
-  }
+  pr("Iteratively adding predictors according to order/ranking for...",verbose)
 
-  if(multicore==T){
-    original_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,X[,1:z])))$r.squared))
-    relimp_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,ordered_predictors[,1:z])))$r.squared))
-    pca_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,pca_factors[,1:z])))$r.squared))
-    pca_relimp_r2 = unlist(parallel::mclapply(X = predictors_range, FUN = function(z) summary(lm(Y~., data = data.frame(Y=Y,pca_ordered_predictors[,1:z])))$r.squared))
-  } else {
-    original_r2 = sapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,X[,1:z])))$r.squared)
-    relimp_r2 = sapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,ordered_predictors[,1:z])))$r.squared)
-    pca_r2 = sapply(X = predictors_range, FUN = function(z) summary(lm(Y~.,data=data.frame(Y=Y,pca_factors[,1:z])))$r.squared)
-    pca_relimp_r2 = sapply(X = predictors_range, FUN = function(z) summary(lm(Y~., data = data.frame(Y=Y,pca_ordered_predictors[,1:z])))$r.squared)
+  get_r2s = function(z,trainX,trainY,testX,testY){
+    if(z == 1){
+      trainX_df = trainX[,1:z]
+      testX_df = testX[,1:z]
+      colnames(trainX_df) = "X1"
+      colnames(testX_df) = "X1"
+    } else {
+      trainX_df = trainX[,1:z]
+      testX_df = testX[,1:z]
+    }
+    this_fit = caret::train(x = trainX_df,y = trainY,method="lm")
+    
+    train_r2 = cor(predict(this_fit,trainX_df),trainY)^2
+    test_r2 = cor(predict(this_fit,testX_df),testY)^2
+    
+    return(c(train_r2,test_r2))
   }
   
-  if(plot==T){
-    matplot(predictors_range,cbind(original_r2,pca_r2,relimp_r2,pca_relimp_r2),type="l",lty=1,lwd=2,col=c("black","red","green","blue"),
-            main="Improvement of Fit with Number of Predictors",
-            xlab="Number of Predictors",ylab="Determination Coefficient")
+  get_best_model = function(trainX,trainY,train_r2,test_r2,r2_type){
+    if(r2_type == "train"){
+      best_r2 = which.max(train_r2)
+    } else {
+      best_r2 = which.max(test_r2)
+    }
+
+    return(lm(Y~.,data = data.frame(Y=trainY,trainX[,1:best_r2])))
+  }
+  
+  if(multicore==T){
+    pr("Original Features",verbose)
+    original_r2 = parallel::mclapply(X = predictors_range, FUN = get_r2s,trainX=trainX,trainY=trainY,testX=testX,testY=testY)
+    pr("Ordered Features",verbose)
+    relimp_r2 = parallel::mclapply(X = predictors_range, FUN = get_r2s,trainX=trainX_ordered,trainY=trainY,testX=testX_ordered,testY=testY)
+    pr("PCA Factors",verbose)
+    pca_r2 = parallel::mclapply(X = predictors_range, FUN = get_r2s,trainX=trainX_PCA,trainY=trainY,testX=testX_PCA,testY=testY)
+    pr("Ordered PCA Factors",verbose)
+    pca_relimp_r2 = parallel::mclapply(X = predictors_range, FUN = getr2s,trainX = trainX_PCA_ordered,trainY=trainY,testX=testX_PCA_ordered,testY=testY)
+  } else {
+    pr("Original Features",verbose)
+    original_r2 = lapply(X = predictors_range, FUN = get_r2s,trainX=trainX,trainY=trainY,testX=testX,testY=testY)
+    pr("Ordered Features",verbose)
+    relimp_r2 = lapply(X = predictors_range, FUN = get_r2s,trainX=trainX_ordered,trainY=trainY,testX=testX_ordered,testY=testY)
+    pr("PCA Factors",verbose)
+    pca_r2 = lapply(X = predictors_range, FUN = get_r2s,trainX=trainX_PCA,trainY=trainY,testX=testX_PCA,testY=testY)
+    pr("Ordered PCA Factors",verbose)
+    pca_relimp_r2 = lapply(X = predictors_range, FUN = getr2s,trainX = trainX_PCA_ordered,trainY=trainY,testX=testX_PCA_ordered,testY=testY)
+  }
+    
+  r2_values = list("original_r2"=original_r2,"relimp_r2"=relimp_r2,"pca_r2"=pca_r2,"pca_relimp_r2"=pca_relimp_r2)
+  r2_values_out = list()
+  
+  for(r2 in names(r2_values)){
+    this_r2_train = c()
+    this_r2_test = c()
+    
+    for(x in r2_values[[r2]]){
+      this_r2_train[length(this_r2_train)+1] = x[[1]]
+      this_r2_test[length(this_r2_test)+1] = x[[2]]
+    }
+    
+    r2_values_out[[paste0(r2,"_train")]] = this_r2_train
+    r2_values_out[[paste0(r2,"_test")]] = this_r2_test
+  }
+  
+  pr("Determining optimal model",verbose)
+  best_model = get_best_model(trainX = trainX_PCA_ordered, trainY = trainY, train_r2 = r2_values_out[["pca_relimp_r2_train"]], test_r2 = r2_values_out[["pca_relimp_r2_test"]], r2_type = r2_type)
+  
+  if(plot_this==T){
+    par(mfrow=c(1,2))
+    plot(predictions_range,cbind(r2_values_out[["original_r2_train"]],r2_values_out[["relimp_r2_train"]],r2_values_out[["pca_r2_train"]],r2_values_out[["pca_relimp_r2_train"]]),
+         type="l",lty=1,lwd=2,col=c("black","red","green","blue"),main="Improvement of Fit with Number of Predictors (Training)", xlab = "Number of Predictors",
+         ylab = "Determination Coefficient")
+    
+    plot(predictions_range,cbind(r2_values_out[["original_r2_test"]],r2_values_out[["relimp_r2_test"]],r2_values_out[["pca_r2_test"]],r2_values_out[["pca_relimp_r2_test"]]),
+         type="l",lty=1,lwd=2,col=c("black","red","green","blue"),main="Improvement of Fit with Number of Predictors (Testing)", xlab = "Number of Predictors",
+         ylab = "Determination Coefficient")
     legend("bottomright",legend=c("Original","PCA","Relimp","PCA w/ Relimp"),lty=1,lwd=2,col=c("black","red","green","blue"))
   }
-      
     
-  out = list("pca_factors" = pca_factors, "pca_loadings" = pca_loadings, "pca_ordered_factors" = pca_ordered_predictors, "ordered_predictors" = ordered_predictors,
-             "original_r2" = original_r2, "pca_r2" = pca_r2, "relimp_pca_r2" = pca_relimp_r2, "relimp_r2" = relimp_r2)
-  
-  if(verbose){
-    print(paste0(Sys.time()," | Process complete"))
-  }
+  out = list("values_train "= trainX, "values_test" = testX,"pca_factors_train" = trainX_PCA,"pca_factors_test" = testX_PCA, "pca_loadings" = pca_loadings,
+             "pca_ordered_factors_train" = trainX_PCA_ordered, "pca_ordered_factors_test" = testX_PCA_ordered,
+             "ordered_predictors_train" = trainX_ordered, "ordered_predictors_test" = testX_ordered,
+             "original_r2_train" = r2_values_out[["original_r2_train"]], "original_r2_test" = r2_values_out[["original_r2_test"]],
+             "pca_r2_train" = r2_values_out[["pca_r2_train"]], "pca_t2_test" = r2_values_out[["pca_r2_test"]],
+             "relimp_pca_r2_train" = r2_values_out[["pca_relimp_r2_train"]], "relimp_pca_r2_test" = r2_values_out[["pca_relimp_r2_test"]],
+             "relimp_r2_train" = r2_values_out[["relimp_r2_train"]], "relimp_r2_test" = r2_values_out[["relimp_r2_test"]],"best_model"=best_model)
+
+    pr("Process complete",verbose)
   return(out)
 }
 
