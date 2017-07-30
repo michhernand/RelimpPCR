@@ -230,7 +230,7 @@ RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_al
     p1 = ggplot2::ggplot(data = p1_data,
                 ggplot2::aes(x=Num_Predictors,y=value, group = variable, color = variable))+
       ggplot2::geom_line() + ggplot2::ggtitle("Improvement of Fit W/ # of Predictors (Train)")+
-      labs(x="Number of Predictors",y="Determination Coefficient")
+      ggplot2::labs(x="Number of Predictors",y="Determination Coefficient")
     
     p2_data = cbind(r2_values_out[["original_r2_test"]],r2_values_out[["relimp_r2_test"]],r2_values_out[["pca_r2_test"]],r2_values_out[["pca_relimp_r2_test"]],1:length(r2_values_out[["pca_relimp_r2_test"]]))
     p2_data = as.data.frame(p2_data)
@@ -240,7 +240,7 @@ RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_al
     p2 = ggplot2::ggplot(data = p2_data,
                 ggplot2::aes(x=Num_Predictors,y=value, group = variable, color = variable))+
       ggplot2::geom_line() + ggplot2::ggtitle("Improvement of Fit W/ # of Predictors (Test)")+
-      labs(x="Number of Predictors",y="Determination Coefficient")
+      ggplot2::labs(x="Number of Predictors",y="Determination Coefficient")
     
     Rmisc::multiplot(p1,p2,cols=2)
   }
