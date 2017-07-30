@@ -7,9 +7,6 @@ r:
 cache: packages
 sudo: false
 
-before_install:
-    - chmod 755 ./test_runner.sh
-
 script:
     - R CMD build .
     - R CMD check *tar.gz
