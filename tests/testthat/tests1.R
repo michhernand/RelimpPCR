@@ -6,7 +6,7 @@ context("Test1 Output")
 Y = mtcars[,1]
 X = mtcars[,2:6]
 
-Z = RelimpPCR(Y,X,0.8,random_seed = 123,plot_this = F)
+Z = RelimpPCR(Y,X,0.8,random_seed = 123,plot_this = F,validation_split = 0.8)
 print("RelimpPCR successful. Checking output...")
 
 test_that("Check Relimp PCA R2 Train",{

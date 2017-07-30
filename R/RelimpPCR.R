@@ -56,7 +56,7 @@
 #' @return $best_model: a lm object containing the model with the least PCA predictors that meets your minimum R-Squared requirement.
 #' @export
 
-RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_algorithm="last",
+RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=1,relimp_algorithm="last",
                      max_predictors=0,remove_factors=T,factors_to_remove=0,max_factors_to_remove=15,
                      normalize_data=T,plot_this=T,verbose=F,multicore=T,random_seed=NA){
   

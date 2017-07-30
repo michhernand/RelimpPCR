@@ -1,8 +1,0 @@
-Test That Repo
-https://github.com/dmlc/xgboost/tree/master/R-package/tests/testthat
-
-Test That Example
-https://github.com/hadley/testthat
-
-Packing Instructions
-http://r-pkgs.had.co.nz/check.html
