@@ -9,7 +9,11 @@ Description: This package performs PCA dimensionality reduction in the context o
 Depends: R (>= 3.3.2)
 Suggests:
     relaimpo,
-    parallel
+    parallel,
+    Rmisc,
+    caret,
+    ggplot2,
+    reshape2
 License: MIT | file LICENSE
 URL: https://github.com/mhernan88/RelimpPCR
 BugReports: https://github.com/mhernan88/RelimpPCR/issues
