@@ -1,4 +1,8 @@
 language: r
+os:
+    - lniux
+    - osx
+    - windows
 r:
     - release
 cache: packages
@@ -6,4 +10,4 @@ cache: packages
 script:
     - R CMD build .
     - R CMD check *tar.gz
-    - Rscript ./RelimpPCR_Test.R
+    - Rscript ./tests/testthat.R

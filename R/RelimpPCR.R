@@ -25,10 +25,11 @@
 #' factors the script will delete before "giving up". This is to prevent a possible very long process. This can be set to 0
 #' to iterate through all columns (not recommended).
 #' @param normalize_data (bool): Whether or not to normalize (subtract mean and divide by standard deviation) before analysis.
-#' @param plot (bool): Whether or not to plot the r-squared values. Default is TRUE.
+#' @param plot_this (bool): Whether or not to plot the r-squared values. Default is TRUE.
 #' @param verbose (bool): Whether or not to include some additional narration around the status of the process.
 #' Default is FALSE.
 #' @param multicore (bool): Whether or not to use mclapply instead of sapply. Default is TRUE.
+#' @param random_seed (int): Random seed (if you wish to use one). NA indicates no random seed.
 #' @return out (list): A list containing all of the below components...
 #' @return $pca_factors: the pca factors
 #' @return $pca_loadings the pca loadings
@@ -36,19 +37,32 @@
 #' dimensionality reduction.
 #' @return $ordered_predictors: the ordered predictors; These factors provide suboptimal model fits in comparison
 #' to ordered pca factors in the case of dimensionality reduction.
-#' @return $original_r2: a vector showing the evolution of r-squared when adding one predictor at a time for the
-#' original unordered predictors.
-#' @return $pca_r2: a vector showing the evolution of r-squared when adding one pca factor at a time for the original
-#' unordered pca factors.
-#' @return $relimp_r2: a vector showing the evolution of r-squared when adding one predictor at a time for the ordered
-#' predictors.
-#' @return $relimp_pca_r2: a vector the evolution of r-squared when adding one pca factor at a time for the ordered
-#' pca factors.
+#' @return $original_r2_train: a vector showing the evolution of r-squared when adding one predictor at a time for the
+#' original unordered predictors in the training data set.
+#' @return $pca_r2_train: a vector showing the evolution of r-squared when adding one pca factor at a time for the original
+#' unordered pca factors in the training data set.
+#' @return $relimp_r2_train: a vector showing the evolution of r-squared when adding one predictor at a time for the ordered
+#' predictors_train in the training data set.
+#' @return $relimp_pca_r2_train: a vector the evolution of r-squared when adding one pca factor at a time for the ordered
+#' pca factors in the training data set.
+#' @return $original_r2_test: a vector showing the evolution of r-squared when adding one predictor at a time for the
+#' original unordered predictors in the testing data set.
+#' @return $pca_r2_test: a vector showing the evolution of r-squared when adding one pca factor at a time for the original
+#' unordered pca factors in the testing data set.
+#' @return $relimp_r2_test: a vector showing the evolution of r-squared when adding one predictor at a time for the ordered
+#' predictors_train in the testing data set.
+#' @return $relimp_pca_r2_test: a vector the evolution of r-squared when adding one pca factor at a time for the ordered
+#' pca factors in the testing data set.
+#' @return $best_model: a lm object containing the model with the least PCA predictors that meets your minimum R-Squared requirement.
 #' @export
 
 RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_algorithm="last",
                      max_predictors=0,remove_factors=T,factors_to_remove=0,max_factors_to_remove=15,
-                     normalize_data=T,plot_this=T,verbose=F,multicore=T){
+                     normalize_data=T,plot_this=T,verbose=F,multicore=T,random_seed=NA){
+  
+  if(is.na(random_seed) == FALSE){
+    set.seed(random_seed)
+  }
   
   pr = function(prompt,verbose){
     if(verbose){
@@ -249,7 +263,7 @@ RelimpPCR = function(Y,X,target_r2,r2_type="test",validation_split=0.8,relimp_al
              "pca_ordered_factors_train" = trainX_PCA_ordered, "pca_ordered_factors_test" = testX_PCA_ordered,
              "ordered_predictors_train" = trainX_ordered, "ordered_predictors_test" = testX_ordered,
              "original_r2_train" = r2_values_out[["original_r2_train"]], "original_r2_test" = r2_values_out[["original_r2_test"]],
-             "pca_r2_train" = r2_values_out[["pca_r2_train"]], "pca_t2_test" = r2_values_out[["pca_r2_test"]],
+             "pca_r2_train" = r2_values_out[["pca_r2_train"]], "pca_r2_test" = r2_values_out[["pca_r2_test"]],
              "relimp_pca_r2_train" = r2_values_out[["pca_relimp_r2_train"]], "relimp_pca_r2_test" = r2_values_out[["pca_relimp_r2_test"]],
              "relimp_r2_train" = r2_values_out[["relimp_r2_train"]], "relimp_r2_test" = r2_values_out[["relimp_r2_test"]],"best_model"=best_model)
 
