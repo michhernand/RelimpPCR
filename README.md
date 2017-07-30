@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/mhernan88/RelimpPCR.svg?branch=master)](https://travis-ci.org/mhernan88/RelimpPCR)
 [![Build status](https://ci.appveyor.com/api/projects/status/ovejdnrbvvbsfnqk?svg=true)](https://ci.appveyor.com/project/mhernan88/relimppcr)
+[![codecov](https://codecov.io/gh/mhernan88/RelimpPCR/branch/master/graph/badge.svg)](https://codecov.io/gh/mhernan88/RelimpPCR)
+
+
 
 
 # RelimpPCR - Relative Importance PCA Regression
