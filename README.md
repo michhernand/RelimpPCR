@@ -11,6 +11,8 @@ The concepts and ideas used to create this package/code were learned from Yuri B
 
 ## Recent Additions
 * Now able to handle matrices that, through PCA, produce very small eigenvalues, which would originally cause the calc.relimp() function to fail. RelimpPCR can now either a) iterative drop the last N PCA factors until a suitable matrix for calc.relimp() is produced, or b) drop the last M PCA factors, where M is a value set by the user.
+* Now able to perform train/test split on data.
+* Plots now show R2 progress for both train and test data sets.
 
 ## Description
 This package performs PCA dimensionality reduction in the context of a linear regression. In most cases, PCA dimensionality reduction is performed independent of the Y values for a regression. This captures the majority of the variance of the X values, but may not actually be the optimal dimensionality reduction solution for a regression against Y.  
