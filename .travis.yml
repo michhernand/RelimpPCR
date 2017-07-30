@@ -1,8 +1,7 @@
 language: r
 os:
-    - lniux
+    - linux
     - osx
-    - windows
 r:
     - release
 cache: packages
