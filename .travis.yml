@@ -5,8 +5,9 @@ os:
 r:
     - release
 cache: packages
+sudo: false
 
 script:
     - R CMD build .
     - R CMD check *tar.gz
-    - Rscript ./tests/testthat.R
+    - Rscript ./tests/testthat/tests1.R
