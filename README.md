@@ -21,7 +21,8 @@ In a shell / command prompt build the package with "R CMD build RelimpPCR" (from
 In a shell / command prompt install the package with "R CMD INSTALL RelimpPCR" (from the directory above "RelimpPCR")
 
 ## Use
-After importing the package, you can use the "RelimpPCR()" function to perform a relative importance PCA regression.
+After importing the package, you can use the "RelimpPCR()" function to train a relative importance PCA regression.  
+After training a relative importnace PCA regression, you can use it for prediction with the "RelimpPCR.predict()" function.
 
 ## Example
 Note in the below example that RelimpPCR achieves higher r-squared values faster than any other method.
