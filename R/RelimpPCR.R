@@ -59,6 +59,8 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
       print(paste0(Sys.time()," | ",prompt))
     }
   }
+  
+  initial_colnames = colnames(X)
 
   if(validation_split == 1){
     trainX = X; testX = X
@@ -298,7 +300,8 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   
   out[["best_model"]]=best_model
   out[["num_factors"]] = length(best_model$coefficients) - 1
-  out[["scaling_factors"]] = list("X_means" = train_means, "X_st_devs" = train_sds, "Y_mean" = Y_mean, "Y_sd" = Y_sd)
+  out[["scaling_factors"]] = list("X_means" = train_means, "X_st_devs" = train_sds, "Y_mean" = Y_mean, "Y_st_dev" = Y_sd)
+  out[["initial_colnames"]] = initial_colnames
   
   if(ranking_successful==T){
     out[["relimp_r2_train"]] = r2_values_out[["relimp_r2_train"]]

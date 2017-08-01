@@ -1,0 +1,39 @@
+#' Predictor Function for RelimpPCR
+#' 
+#' This function takes the trained RelimpPCR object and proceeds to perform a prediction from the best model (as defined in the documentation of RelimpPCR()).
+#' @param pcr (pcr_object): The trained RelimpPCR object produced by the RelimpPCR() function.
+#' @param newdata (data frame): The new X value(s) you wish to draw a prediction from.
+#' @return pred (data frame): A data frame containing the preictions.
+#' @export
+
+RelimpPCR.predict = function(pcr, newdata){
+  single_prediction=FALSE
+  if(class(newdata) != "data.frame"){
+    single_prediction=TRUE
+    newdata = data.frame(t(unlist(newdata)))
+  }
+  colnames(newdata) = pcr$initial_colnames
+  
+  for(j in 1:ncol(newdata)){
+    newdata[,j] = (newdata[,j] - pcr$scaling_factors$X_means[j])/pcr$scaling_factors$X_st_devs[j]
+  }
+  
+  pca = predict(pcr$pca_object,newdata)
+  ordered_pca = as.data.frame(pca[,order(pcr$pca_factors_rank)])
+  
+  if(single_prediction==TRUE){
+    pca_colnames = row.names(ordered_pca)
+    ordered_pca = data.frame(t(unlist(ordered_pca)))
+    colnames(ordered_pca) = pca_colnames
+  }
+  ordered_pca = ordered_pca[,1:pcr$num_factors]
+  
+  cols = c()
+  for(i in 1:pcr$num_factors){
+    cols[length(cols) + 1] = paste0("PC",i)
+  }
+  colnames(ordered_pca) = cols
+  
+  pred = predict(pcr$best_model,ordered_pca)
+  return(pred)
+}
