@@ -1,7 +1,6 @@
 language: r
 os:
     - linux
-    - osx
 r:
     - release
 cache: packages
