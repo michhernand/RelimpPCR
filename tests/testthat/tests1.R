@@ -10,11 +10,11 @@ Z = RelimpPCR(Y,X,0.8,random_seed = 123,plot_this = F,validation_split = 0.8)
 print("RelimpPCR successful. Checking output...")
 
 test_that("Check Relimp PCA R2 Train",{
-  expect_equal(Z$relimp_pca_r2_train[1],0.8228668,tolerance=1e-6)
+  expect_equal(Z$relimp_pca_r2_train[1],0.8272183,tolerance=1e-6)
   expect_equal(Z$relimp_pca_r2_train[length(Z$relimp_pca_r2_train)], 0.9056683,tolerance=1e-6)
 })
 test_that("Check Relimp PCA R2 Test",{
-  expect_equal(Z$relimp_pca_r2_test[1],0.8053812,tolerance=1e-6)
+  expect_equal(Z$relimp_pca_r2_test[1],0.8022651,tolerance=1e-6)
   expect_equal(Z$relimp_pca_r2_test[length(Z$relimp_pca_r2_test)], 0.7338205,tolerance=1e-6)
 })
 test_that("Check Original R2 Train",{
@@ -26,11 +26,11 @@ test_that("Check Original R2 Test",{
   expect_equal(Z$original_r2_test[length(Z$original_r2_test)],0.7338205,tolerance=1e-6)
 })
 test_that("Check PCA R2 Train",{
-  expect_equal(Z$pca_r2_train[1],0.8228668,tolerance=1e-6)
+  expect_equal(Z$pca_r2_train[1],0.8272183,tolerance=1e-6)
   expect_equal(Z$pca_r2_train[length(Z$pca_r2_train)],0.9056683,tolerance=1e-6)
 })
 test_that("Check PCA R2 Test",{
-  expect_equal(Z$pca_r2_test[1],0.8053812,tolerance=1e-6)
+  expect_equal(Z$pca_r2_test[1],0.8022651,tolerance=1e-6)
   expect_equal(Z$pca_r2_test[length(Z$pca_r2_test)],0.7338205,tolerance=1e-6)
 })
 test_that("Check Relimp R2 Train",{

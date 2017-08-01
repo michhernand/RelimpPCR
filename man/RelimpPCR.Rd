@@ -4,10 +4,10 @@
 \alias{RelimpPCR}
 \title{A Relative Importance PCA Regression Function}
 \usage{
-RelimpPCR(Y, X, target_r2, r2_type = "test", validation_split = 0.8,
-  relimp_algorithm = "last", max_predictors = 0, remove_factors = T,
-  factors_to_remove = 0, max_factors_to_remove = 15, normalize_data = T,
-  plot_this = T, verbose = F, multicore = T, random_seed = NA)
+RelimpPCR(Y, X, target_r2, validation_split = 1, relimp_algorithm = "last",
+  max_predictors = 0, remove_factors = T, factors_to_remove = 0,
+  max_factors_to_remove = 15, normalize_data = T, plot_this = T,
+  verbose = F, multicore = T, cores = 2, random_seed = NA)
 }
 \arguments{
 \item{Y}{(list/vector): This a list/vector of Y values for the regression.}
@@ -16,8 +16,6 @@ RelimpPCR(Y, X, target_r2, r2_type = "test", validation_split = 0.8,
 
 \item{target_r2}{(float 0-1): The algorithm will attempt to return to you the simplest model (i.e. with fewest predictors) that satisfies
 your target_r2 value; If no model satisfies this condition, then the full model (with all predictors) will be returned.}
-
-\item{r2_type}{(string "train" or "test): This defines which r-squared value the target_r2 argument will evaluate.}
 
 \item{validation_split}{(float 0-1): This determines how much of your data set will be in the train data set. The remainder will be
 allocated to the test data set. If set to 1, train and test samples will be identical.}
@@ -50,46 +48,42 @@ Default is FALSE.}
 
 \item{multicore}{(bool): Whether or not to use mclapply instead of sapply. Default is TRUE.}
 
+\item{cores}{(int): The number of cores to distribute work across for multicore operations.}
+
 \item{random_seed}{(int): Random seed (if you wish to use one). NA indicates no random seed.}
 }
 \value{
 out (list): A list containing all of the below components...
 
-$pca_factors: the pca factors
+$pca_loadings: The PCA loadings.
 
-$pca_loadings the pca loadings
+$pca_object: The trained PCA object.
 
-$pca_ordered_factors: the ordered pca factors; These factors should provide optimal model fits in 
-dimensionality reduction.
+$pca_factors_rank: The numerical ranking of the PCA factors.
 
-$ordered_predictors: the ordered predictors; These factors provide suboptimal model fits in comparison
-to ordered pca factors in the case of dimensionality reduction.
+$original_r2_train: The r-squared values when iteratively adding unordered training predictors.
 
-$original_r2_train: a vector showing the evolution of r-squared when adding one predictor at a time for the
-original unordered predictors in the training data set.
+$pca_r2_train: The r-squared values when iteratively adding unordered training PCA factors.
 
-$pca_r2_train: a vector showing the evolution of r-squared when adding one pca factor at a time for the original
-unordered pca factors in the training data set.
+$relimp_pca_r2_train: The r-squared values when iteratively adding ordered training PCA factors (ordered by relative importance of the training data set).
 
-$relimp_r2_train: a vector showing the evolution of r-squared when adding one predictor at a time for the ordered
-predictors_train in the training data set.
+$best_model: The model with the fewest predictors that has r-squared equal to or above the "target_r2" argument.
 
-$relimp_pca_r2_train: a vector the evolution of r-squared when adding one pca factor at a time for the ordered
-pca factors in the training data set.
+$num_factors: The number of PCA factors used in the best model.
 
-$original_r2_test: a vector showing the evolution of r-squared when adding one predictor at a time for the
-original unordered predictors in the testing data set.
+$scaling_factors: The mean and standard deviations used to scale the X columns and Y column.
 
-$pca_r2_test: a vector showing the evolution of r-squared when adding one pca factor at a time for the original
-unordered pca factors in the testing data set.
+$relimp_r2_train: ONLY RETURNED IF relative importance for ordered predictors is successful. This contains the r-squared values when iteratively adding ordered predictors (ordered by relative importance of the training data set).
 
-$relimp_r2_test: a vector showing the evolution of r-squared when adding one predictor at a time for the ordered
-predictors_train in the testing data set.
+$ranked_features: ONLY RETURNED IF relative importance for ordered predictors is successful. This contains the numerical ranking of predictors.
 
-$relimp_pca_r2_test: a vector the evolution of r-squared when adding one pca factor at a time for the ordered
-pca factors in the testing data set.
+$original_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1. This contains the r-squared values when iteratively adding unordered testing predictors.
 
-$best_model: a lm object containing the model with the least PCA predictors that meets your minimum R-Squared requirement.
+$pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1: This contains the r-squared values when iteratively adding unordered testing PCA factors.
+
+$relimp_pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1. This contains the r-squared values when iteratively adding ordered testing PCA factors (ordered by relative importance of the training data set).
+
+$relimp_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1 AND relative importance for ordered predictors is successful. This contains the r-squared values when iteratively adding ordered testing predictors (ordered by relative importance of the training data set).
 }
 \description{
 This function performs a relative importance PCA regression. It performs PCA and then applys a relative
