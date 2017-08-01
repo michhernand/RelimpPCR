@@ -1,7 +1,7 @@
 Package: RelimpPCR
 Type: Package
 Title: Relative Importance PCA Regression
-Version: 0.2.1
+Version: 0.2.2
 Date: 2017-07-25
 Author: Michael Hernandez <hernandez@uchicago.edu>, Yuri Balasanov
 Maintainer: Michael Hernandez <hernandez@uchicago.edu>
