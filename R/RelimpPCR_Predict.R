@@ -14,8 +14,10 @@ RelimpPCR.predict = function(pcr, newdata){
   }
   colnames(newdata) = pcr$initial_colnames
   
-  for(j in 1:ncol(newdata)){
-    newdata[,j] = (newdata[,j] - pcr$scaling_factors$X_means[j])/pcr$scaling_factors$X_st_devs[j]
+  if(is.null(pcr$scaling_factors) == FALSE){
+    for(j in 1:ncol(newdata)){
+      newdata[,j] = (newdata[,j] - pcr$scaling_factors$X_means[j])/pcr$scaling_factors$X_st_devs[j]
+    }
   }
   
   pca = predict(pcr$pca_object,newdata)
@@ -28,11 +30,7 @@ RelimpPCR.predict = function(pcr, newdata){
   }
   ordered_pca = ordered_pca[,1:pcr$num_factors]
   
-  cols = c()
-  for(i in 1:pcr$num_factors){
-    cols[length(cols) + 1] = paste0("PC",i)
-  }
-  colnames(ordered_pca) = cols
+  colnames(ordered_pca) = names(pcr$pca_factors_rank)[order(pcr$pca_factors_rank)]
   
   pred = predict(pcr$best_model,ordered_pca)
   return(pred)

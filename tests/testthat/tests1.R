@@ -6,7 +6,7 @@ context("Test1 Output")
 Y = mtcars[,1]
 X = mtcars[,2:6]
 
-Z = RelimpPCR(Y,X,0.8,random_seed = 123,plot_this = F,validation_split = 0.8)
+Z = RelimpPCR(Y,X,0.8,random_seed = 123,plot_this = F,validation_split = 0.8,multicore = F)
 print("RelimpPCR successful. Checking output...")
 
 test_that("Check Relimp PCA R2 Train",{
@@ -43,13 +43,4 @@ test_that("Check Relimp R2 Test",{
 })
 test_that("Check for Best Model",{
   expect_is(Z$best_model,"lm")
-})
-
-test_that("Check Prediction One",{
-  X_test = c(31,12,43,25,6)
-  expect_equal(as.numeric(RelimpPCR.predict(Z,X_test)),22.15683,tolerance=1e-6)
-})
-
-test_that("Check Prediction Many",{
-  expect_equal(as.numeric(RelimpPCR.predict(Z,X)[1]),0.6650005,tolerance=1e-6)
 })

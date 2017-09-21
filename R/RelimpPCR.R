@@ -61,7 +61,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   }
   
   initial_colnames = colnames(X)
-
+  
   if(validation_split == 1){
     trainX = X; testX = X
     trainY = Y; testY = Y
@@ -77,13 +77,17 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
     trainY = Y[ix]; testY = Y[-ix]
   }  
   
+  X = NULL
+  Y = NULL
+  gc()
+  
   if(normalize_data == F){
     warning("WARN: Using non-normalized data in PCA can cause sub-optimal results")
   } else{
     pr("Standardizing data",verbose)
     train_means = c()
     train_sds = c()
-
+    
     for(z in 1:dim(trainX)[2]){
       this_mean = mean(trainX[,z])
       this_sd = sd(trainX[,z])
@@ -100,7 +104,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
     trainY = (trainY-Y_mean)/Y_sd
     testY = (testY-Y_mean)/Y_sd
   }
-
+  
   pr("Running PCA",verbose)
   
   #PCA
@@ -110,7 +114,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   pca_loadings = pca$rotation
   
   #NEED TO ADD PREDICT FUNCTION RelimpPCR.predict()
-
+  
   pr(paste0("Ranking predictors against Y using calc.relimp ",relimp_algorithm),verbose)
   
   #Ranking Features
@@ -127,8 +131,12 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   
   if(ranking_successful == F){
     pr("Ranking predictors against Y using calc.relimp FAILED. Continuing with other measures",verbose)
+    fit = NULL
+    relimp_factors = NULL
+    ranked_factors = NULL
+    gc()
   }
-
+  
   pr("Ranking PCA factors against Y using calc.relimp",verbose)
   
   if(max_factors_to_remove == 0){
@@ -143,11 +151,11 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
         pca_fit = lm(Y~.,data = data.frame(Y = unlist(trainY),pca_factor_subset))
         try({
           pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
-          pr(paste0("PCA factor relative importance calculation successful; Removed ",x," PCA factor(s)"),TRUE)
+          pr(paste0("PCA factor relative importance calculation successful; Removed ",x," PCA factor(s)"),verbose)
           break
         })
         
-        pr(paste0("ERROR in calculating relative importance of PCA factors; Removing last ",x," PCA factor(s)"),TRUE)
+        pr(paste0("ERROR in calculating relative importance of PCA factors; Removing last ",x," PCA factor(s)"),verbose)
         if(x == max_factors_to_remove){
           stop("Could not create non-singular matrix. Try increasing max_factors_to_remove.")
         }
@@ -156,7 +164,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
       pca_factor_subset = trainX_PCA[,1:(ncol(trainX_PCA) - factors_to_remove)]
       pca_fit = lm(Y~.,data = data.frame(Y = unlist(trainY),pca_factor_subset))
       pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
-      pr(paste0("Removed ",factors_to_remove," PCA factor(s)."))
+      pr(paste0("Removed ",factors_to_remove," PCA factor(s)."),verbose)
     }
   } else {
     pca_factor_subset = trainX_PCA
@@ -164,14 +172,17 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
     pca_relimp_factors = relaimpo::calc.relimp(pca_fit,type="last")
   }
   
+  pca_fit = NULL
+  gc()
+  
   pca_ranked_factors = pca_relimp_factors@last.rank
   trainX_PCA_ordered = trainX_PCA[,order(pca_ranked_factors)]
   testX_PCA_ordered = testX_PCA[,order(pca_ranked_factors)]
-
+  
   if(max_predictors > dim(pca_factor_subset)[2]){
     stop("ERROR: You cannot have 'max_predictors' be greater than the total number of remaining PCA factors.")
   }
-    
+  
   if(max_predictors <= 0){
     predictors_range = 1:dim(pca_factor_subset)[2]
   } else {
@@ -179,7 +190,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   }
   
   pr("Iteratively adding predictors according to order/ranking for...",verbose)
-
+  
   get_r2s = function(z,trainX,trainY,testX,testY){
     #browser()
     if(z == 1){
@@ -228,7 +239,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
     pr("Ordered PCA Factors",verbose)
     pca_relimp_r2 = lapply(X = predictors_range, FUN = get_r2s,trainX = trainX_PCA_ordered,trainY=trainY,testX=testX_PCA_ordered,testY=testY)
   }
-    
+  
   r2_values = list("original_r2"=original_r2,"pca_r2"=pca_r2,"pca_relimp_r2"=pca_relimp_r2)
   if(ranking_successful==T){
     r2_values[["relimp_r2"]] = relimp_r2
@@ -252,7 +263,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   best_model = get_best_model(trainX = trainX_PCA_ordered, trainY = trainY, train_r2 = r2_values_out[["pca_relimp_r2_train"]], test_r2 = r2_values_out[["pca_relimp_r2_test"]])
   
   if(plot_this==T){
-
+    
     p1_data = cbind(r2_values_out[["original_r2_train"]],r2_values_out[["relimp_r2_train"]],r2_values_out[["pca_r2_train"]],r2_values_out[["pca_relimp_r2_train"]],1:length(r2_values_out[["pca_relimp_r2_train"]]))
     p1_data = as.data.frame(p1_data)
     if(ranking_successful==T){
@@ -261,11 +272,15 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
       colnames(p1_data) = c("Original_R2","PCA_R2","PCA_Relimp_R2","Num_Predictors")
     }
     p1_data = reshape2::melt(data = p1_data, id = "Num_Predictors")
-
+    
     p1 = ggplot2::ggplot(data = p1_data,
-                ggplot2::aes(x=Num_Predictors,y=value, group = variable, color = variable))+
+                         ggplot2::aes(x=Num_Predictors,y=value, group = variable, color = variable))+
       ggplot2::geom_line() + ggplot2::ggtitle("Improvement of Fit W/ # of Predictors (Train)")+
       ggplot2::labs(x="Number of Predictors",y="Determination Coefficient")
+    
+    Num_Predictors = NULL
+    value = NULL
+    variable = NULL
     
     if(validation_split!=1){
       p2_data = cbind(r2_values_out[["original_r2_test"]],r2_values_out[["relimp_r2_test"]],r2_values_out[["pca_r2_test"]],r2_values_out[["pca_relimp_r2_test"]],1:length(r2_values_out[["pca_relimp_r2_test"]]))
@@ -278,7 +293,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
       p2_data = reshape2::melt(data = p2_data, id = "Num_Predictors")
       
       p2 = ggplot2::ggplot(data = p2_data,
-                  ggplot2::aes(x=Num_Predictors,y=value, group = variable, color = variable))+
+                           ggplot2::aes(x=Num_Predictors,y=value, group = variable, color = variable))+
         ggplot2::geom_line() + ggplot2::ggtitle("Improvement of Fit W/ # of Predictors (Test)")+
         ggplot2::labs(x="Number of Predictors",y="Determination Coefficient")
       
@@ -287,7 +302,7 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
       print(p1)
     }
   }
-    
+  
   out = list()
   
   out[["pca_loadings"]] = pca_loadings
@@ -300,7 +315,11 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   
   out[["best_model"]]=best_model
   out[["num_factors"]] = length(best_model$coefficients) - 1
-  out[["scaling_factors"]] = list("X_means" = train_means, "X_st_devs" = train_sds, "Y_mean" = Y_mean, "Y_st_dev" = Y_sd)
+  
+  if(normalize_data==T){
+    out[["scaling_factors"]] = list("X_means" = train_means, "X_st_devs" = train_sds, "Y_mean" = Y_mean, "Y_st_dev" = Y_sd)
+  }
+  
   out[["initial_colnames"]] = initial_colnames
   
   if(ranking_successful==T){
@@ -318,8 +337,8 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
       out[["relimp_r2_test"]] = r2_values_out[["relimp_r2_test"]]
     }
   }
-
-    pr("Process complete",verbose)
+  
+  pr("Process complete",verbose)
   return(out)
 }
 
