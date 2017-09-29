@@ -17,3 +17,12 @@ pred (data frame): A data frame containing the preictions.
 \description{
 This function takes the trained RelimpPCR object and proceeds to perform a prediction from the best model (as defined in the documentation of RelimpPCR()).
 }
+\examples{
+#The below function takes a trained PCR object (produced by RelimpPCR) 
+#and a dataframe (using the same columns that the PCR object was trained 
+#with) and produces a prediction.
+pcr_object = RelimpPCR(Y = mtcars$mpg, X = data.frame(mtcars$cyl,
+mtcars$disp, mtcars$hp),target_r2 = 0.75)
+pred = RelimpPCR.predict(pcr_object, data.frame(mtcars$cyl, mtcars$disp, 
+mtcars$hp))
+}

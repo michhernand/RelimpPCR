@@ -90,3 +90,30 @@ This function performs a relative importance PCA regression. It performs PCA and
 importnace measure on each additional factor. The output shows optimal PCA factor selection for a given
 regression.
 }
+
+\examples{
+#Below performs multicore (2 cores by default) relative importance principal 
+#components regression of mpg against cyl, disp, and hp (all from the mtcars 
+#sample data set), optimizing for a r-squared value of 0.80. Plots the 
+#progression of r-squared by default.
+pcr1 <- RelimpPCR(Y = mtcars$mpg, X = data.frame(mtcars$cyl,mtcars$disp,
+mtcars$hp), target_r2 = 0.8)
+
+#Below performs multicore (2 cores by default) relative importance principal 
+#components regression of mpg against cyl, disp, and hp (all from the mtcars 
+#sample data set), optimizing for a r-squared value of 0.65. Plotting is not 
+#enabled in this example.
+pcr2 <- RelimpPCR(Y = mtcars$mpg, X = data.frame(mtcars$cyl,mtcars$disp), 
+target_r2 = 0.65, plot_this = FALSE)
+
+#Below performs single core relative importance principal components 
+#regression of mpg against cyl, disp, and hp (all from the mtcars sample 
+#data set; all values are normalized using z-score), optimizing for a 
+#r-squared value of 0.65. Plotting is not enabled in this example. 
+#Additionally, when the function corrects for performing relative importance 
+#with near-zero eigenvalues in the data, it will drop (i.e. delete) 8 
+#principal components from the data set before giving up.
+pcr3 <- RelimpPCR(Y = mtcars$mpg, X = data.frame(mtcars$cyl,mtcars$disp), 
+target_r2 = 0.65, plot_this = FALSE, multicore = FALSE, validation_split = 0.8, 
+max_factors_to_remove = 8, normalize_data = TRUE)
+}
