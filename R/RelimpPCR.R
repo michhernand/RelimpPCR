@@ -46,6 +46,15 @@
 #' @return $pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1: This contains the r-squared values when iteratively adding unordered testing PCA factors.
 #' @return $relimp_pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1. This contains the r-squared values when iteratively adding ordered testing PCA factors (ordered by relative importance of the training data set).
 #' @return $relimp_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1 AND relative importance for ordered predictors is successful. This contains the r-squared values when iteratively adding ordered testing predictors (ordered by relative importance of the training data set).
+#' @examples 
+#' \dontrun{
+#' #Below performs single core relative importance principal 
+#' #components regression of mpg against cyl, disp, and hp (all from the mtcars 
+#' #sample data set), optimizing for a r-squared value of 0.75.
+#' y = mtcars$mpg[1:20]; x = mtcars[1:20,c("cyl","disp")]
+#' pcr_object = RelimpPCR(Y = y, X = x,target_r2 = 0.75, multicore = FALSE,
+#' remove_factors = FALSE, normalize_data = FALSE, plot_this = FALSE)
+#' }
 #' @export
 
 RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",max_predictors=0,remove_factors=T,factors_to_remove=0,max_factors_to_remove=15,normalize_data=T,plot_this=T,verbose=F,multicore=T,cores=2,random_seed=NA){
@@ -112,8 +121,6 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   trainX_PCA = pca$x
   testX_PCA = predict(pca,testX)
   pca_loadings = pca$rotation
-  
-  #NEED TO ADD PREDICT FUNCTION RelimpPCR.predict()
   
   pr(paste0("Ranking predictors against Y using calc.relimp ",relimp_algorithm),verbose)
   
