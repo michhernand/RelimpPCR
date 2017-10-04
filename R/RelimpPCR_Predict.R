@@ -5,7 +5,7 @@
 #' @param newdata (data frame): The new X value(s) you wish to draw a prediction from.
 #' @return pred (data frame): A data frame containing the preictions.
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' #The below function takes a trained PCR object (produced by RelimpPCR) 
 #' #and a dataframe (using the same columns that the PCR object was trained 
 #' #with) and produces a prediction.

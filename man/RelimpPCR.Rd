@@ -91,7 +91,7 @@ importnace measure on each additional factor. The output shows optimal PCA facto
 regression.
 }
 \examples{
-\dontrun{
+\donttest{
 #Below performs single core relative importance principal 
 #components regression of mpg against cyl, disp, and hp (all from the mtcars 
 #sample data set), optimizing for a r-squared value of 0.75.

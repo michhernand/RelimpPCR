@@ -18,7 +18,7 @@ pred (data frame): A data frame containing the preictions.
 This function takes the trained RelimpPCR object and proceeds to perform a prediction from the best model (as defined in the documentation of RelimpPCR()).
 }
 \examples{
-\dontrun{
+\donttest{
 #The below function takes a trained PCR object (produced by RelimpPCR) 
 #and a dataframe (using the same columns that the PCR object was trained 
 #with) and produces a prediction.
