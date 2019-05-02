@@ -59,6 +59,7 @@
 
 RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",max_predictors=0,remove_factors=T,factors_to_remove=0,max_factors_to_remove=15,normalize_data=T,plot_this=T,verbose=F,multicore=T,cores=2,random_seed=NA){
   
+  suppressWarnings(RNGversion("3.5.0"))
   if(is.na(random_seed) == FALSE){
     set.seed(random_seed)
   }
