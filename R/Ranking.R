@@ -1,6 +1,5 @@
 rank_features_by_relimp <- function(data, relimp_algorithm = "lmg") {
-    ok <- FALSE
-  tryCatch(
+  out <- tryCatch(
     {
         fit <- lm(
             Y ~ .,
@@ -25,24 +24,27 @@ rank_features_by_relimp <- function(data, relimp_algorithm = "lmg") {
         if (!is.null(data$test_x)) {
             test_x_ordered <- data$test_x[, order(ranked_factors)]
         }
-        ok <- TRUE
+        return(list(
+            ok = TRUE,
+            fit = fit,
+            relimp_factors = relimp_factors,
+            ranked_factors = ranked_factors,
+            train_x_ordered = train_x_ordered
+        ))
     },
     error = function(cond) {
         warning(
             "WARN: Ranking predictors against Y using calc.relimp FAILED."
         )
-        fit <- NULL
-        relimp_factors <- NULL
-        ranked_factors <- NULL
+        return(list(
+            ok = FALSE,
+            fit = NULL,
+            relimp_factors = NULL,
+            ranked_factors = NULL,
+            train_x_ordered = NULL
+        ))
     }
   )
-    out <- list(
-        ok = ok,
-        fit = fit,
-        relimp_factors = relimp_factors,
-        ranked_factors = ranked_factors,
-        train_x_ordered = train_x_ordered
-    )
 
     if (!is.null(data$test_x)) {
         out$test_x_ordered <- test_x_ordered

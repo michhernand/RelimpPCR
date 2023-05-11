@@ -19,10 +19,10 @@ train_test_split <- function(X, Y, validation_split) {
   }
 
   out <- list()
-  out[[train_x]] <- train_x
-  out[[train_y]] <- train_y
-  out[[test_x]] <- test_x
-  out[[test_y]] <- test_y
+  out$train_x <- train_x
+  out$train_y <- train_y
+  out$test_x <- test_x
+  out$test_y <- test_y
   return(out)
 }
 

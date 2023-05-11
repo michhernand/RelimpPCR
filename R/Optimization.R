@@ -1,15 +1,15 @@
 get_r2s <- function(
-    factors_to_remove,
+    n_factors_to_keep,
     dfs
 ) {
-    if (z == 1) {
-        train_x <- data.frame(dfs$train_x[, 1:factors_to_remove])
-        test_x <- data.frame(dfs$test_x[, 1:factors_to_remove])
+    if (n_factors_to_keep == 1) {
+        train_x <- data.frame(dfs$train_x[, 1:n_factors_to_keep])
+        test_x <- data.frame(dfs$test_x[, 1:n_factors_to_keep])
         colnames(train_x) <- "X1"
         colnames(test_x) <- "X1"
     } else {
-        train_x <- data.frame(dfs$train_x[, 1:factors_to_remove])
-        test_x <- data.frame(dfs$test_x[, 1:factors_to_remove])
+        train_x <- data.frame(dfs$train_x[, 1:n_factors_to_keep])
+        test_x <- data.frame(dfs$test_x[, 1:n_factors_to_keep])
     }
 
     fit <- caret::train(
@@ -26,37 +26,36 @@ get_r2s <- function(
 get_r2s_batch_mp <- function(
     predictors_range,
     dfs,
-    raw_ranked_features,
+    raw_ranked,
     pca_ranked,
     train_x_pca,
     test_x_pca,
-    ranking_successful,
-    cores,
-    verbose) {
-    log::log_info("original features")
+    cores) {
+    out <- list()
 
-    original_r2 <- parallel::mclapply(
+    log::log_info("original features")
+    out$original_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
       dfs = dfs,
       mc.cores = cores)
 
-    if(ranking_successful==T){
+    if (raw_ranked$ok == TRUE) {
         log::log_info("ordered features")
-      relimp_r2 <- parallel::mclapply(
+      out$relimp_r2 <- parallel::mclapply(
         X = predictors_range,
         FUN = get_r2s,
         dfs = list(
-          train_x = raw_ranked_features$train_x_ordered,
+          train_x = raw_ranked$train_x_ordered,
           train_y = dfs$train_y,
-          test_x = raw_ranked_features$test_x_ordered,
+          test_x = raw_ranked$test_x_ordered,
           test_y = dfs$test_y
         ),
         mc.cores = cores)
     }
 
     log::log_info("pca factors")
-    pca_r2 <- parallel::mclapply(
+    out$pca_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
       dfs = list(
@@ -67,9 +66,9 @@ get_r2s_batch_mp <- function(
       ),
       mc.cores = cores)
 
-      log::log_info("ordered pca factors")
-    pca_relimp_r2 = parallel::mclapply(
-      X = predictors_range, 
+    log::log_info("ordered pca factors")
+    out$pca_relimp_r2 <- parallel::mclapply(
+      X = predictors_range,
       FUN = get_r2s,
       dfs = list(
         train_x = pca_ranked$train_x_ordered,
@@ -79,20 +78,79 @@ get_r2s_batch_mp <- function(
       ),
       mc.cores = cores
     )
+    return(out)
 }
 
+get_r2s_batch <- function(
+    predictors_range,
+    dfs,
+    raw_ranked,
+    pca_ranked,
+    train_x_pca,
+    test_x_pca
+) {
+    out <- list()
+
+    log::log_info("original features")
+    out$original_r2 <- lapply(
+        X = predictors_range,
+        FUN = get_r2s,
+        dfs = dfs,
+    )
+    if (raw_ranked$ok == TRUE) {
+        log::log_info("ordered features")
+        out$relimp_r2 <- lapply(
+            X = predictors_range,
+            FUN = get_r2s,
+            dfs = list(
+                train_x = raw_ranked$train_x_ordered,
+                train_y = dfs$train_y,
+                test_x = raw_ranked$test_x_ordered,
+                test_y = dfs$test_y
+            ),
+        )
+    }
+
+    log::log_info("pca factors")
+    out$pca_r2 <- lapply(
+        X = predictors_range,
+        FUN = get_r2s,
+        dfs = list(
+            train_x = train_x_pca,
+            train_y = dfs$train_y,
+            test_x = test_x_pca,
+            test_y = dfs$test_y
+        ),
+    )
+
+    log::log_info("ordered pca factors")
+    out$pca_relimp_r2 <- lapply(
+        X = predictors_range,
+        FUN = get_r2s,
+        dfs = list(
+            train_x = pca_ranked$train_x_ordered,
+            train_y = dfs$train_y,
+            test_x = pca_ranked$test_x_ordered,
+            test_y = dfs$test_y
+        ),
+    )
+    return(out)
+}
+
+
+# TODO: Option for test instead of train?
 get_best_model <- function(
     dfs,
     train_r2,
-    test_rw
+    test_r2
 ) {
-    best_rq <- which.max(train_r2)
+    best_r2 <- which.max(train_r2)
     return(
         lm(
             Y ~ .,
             data = data.frame(
                 Y = dfs$train_y,
-                dfs$train_x[, 1:best_rq]
+                dfs$train_x[, 1:best_r2]
             )
         )
     )
