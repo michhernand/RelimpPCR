@@ -33,7 +33,7 @@ get_r2s_batch_mp <- function(
     cores) {
     out <- list()
 
-    log::log_info("original features")
+    logger::log_info("original features")
     out$original_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
@@ -41,7 +41,7 @@ get_r2s_batch_mp <- function(
       mc.cores = cores)
 
     if (raw_ranked$ok == TRUE) {
-        log::log_info("ordered features")
+        logger::log_info("ordered features")
       out$relimp_r2 <- parallel::mclapply(
         X = predictors_range,
         FUN = get_r2s,
@@ -54,7 +54,7 @@ get_r2s_batch_mp <- function(
         mc.cores = cores)
     }
 
-    log::log_info("pca factors")
+    logger::log_info("pca factors")
     out$pca_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
@@ -66,7 +66,7 @@ get_r2s_batch_mp <- function(
       ),
       mc.cores = cores)
 
-    log::log_info("ordered pca factors")
+    logger::log_info("ordered pca factors")
     out$pca_relimp_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
@@ -91,14 +91,14 @@ get_r2s_batch <- function(
 ) {
     out <- list()
 
-    log::log_info("original features")
+    logger::log_info("original features")
     out$original_r2 <- lapply(
         X = predictors_range,
         FUN = get_r2s,
-        dfs = dfs,
+        dfs = dfs
     )
     if (raw_ranked$ok == TRUE) {
-        log::log_info("ordered features")
+        logger::log_info("ordered features")
         out$relimp_r2 <- lapply(
             X = predictors_range,
             FUN = get_r2s,
@@ -107,11 +107,11 @@ get_r2s_batch <- function(
                 train_y = dfs$train_y,
                 test_x = raw_ranked$test_x_ordered,
                 test_y = dfs$test_y
-            ),
+            )
         )
     }
 
-    log::log_info("pca factors")
+    logger::log_info("pca factors")
     out$pca_r2 <- lapply(
         X = predictors_range,
         FUN = get_r2s,
@@ -120,10 +120,10 @@ get_r2s_batch <- function(
             train_y = dfs$train_y,
             test_x = test_x_pca,
             test_y = dfs$test_y
-        ),
+        )
     )
 
-    log::log_info("ordered pca factors")
+    logger::log_info("ordered pca factors")
     out$pca_relimp_r2 <- lapply(
         X = predictors_range,
         FUN = get_r2s,
@@ -132,7 +132,7 @@ get_r2s_batch <- function(
             train_y = dfs$train_y,
             test_x = pca_ranked$test_x_ordered,
             test_y = dfs$test_y
-        ),
+        )
     )
     return(out)
 }

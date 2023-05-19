@@ -25,7 +25,6 @@
 #' to iterate through all columns (not recommended).
 #' @param normalize_data (bool): Whether or not to normalize (subtract mean and divide by standard deviation) before analysis.
 #' @param plot_this (bool): Whether or not to plot the r-squared values. Default is TRUE.
-#' @param verbose (bool): Whether or not to include some additional narration around the status of the process.
 #' Default is FALSE.
 #' @param multicore (bool): Whether or not to use mclapply instead of sapply. Default is TRUE.
 #' @param cores (int): The number of cores to distribute work across for multicore operations.
@@ -60,7 +59,7 @@ RelimpPCR <- function(
   Y,X,target_r2,validation_split=1,relimp_algorithm="last",
   max_predictors=0,remove_factors=T,factors_to_remove=0,
   max_factors_to_remove=15,normalize_data=T,plot_this=T,
-  verbose=F,multicore=T,cores=2,random_seed=NA){
+  multicore=T,cores=2,random_seed=NA){
   suppressWarnings(RNGversion("3.5.0"))
   if (is.na(random_seed) == FALSE) {
     set.seed(random_seed)
@@ -92,16 +91,16 @@ RelimpPCR <- function(
   train_x_pca <- pca$x
   test_x_pca <- predict(pca,dfs$test_x)
   pca_loadings <- pca$rotation
-  
-  # pr(paste0("Ranking predictors against Y using calc.relimp ",relimp_algorithm),verbose)
+
+  logger::log_info(
+    paste("ranking predictors against Y using calc.relimp", relimp_algorithm))
   raw_ranked_features <- rank_features_by_relimp(
     dfs,
     relimp_algorithm
   )
-  
 
-  # pr("Ranking PCA factors against Y using calc.relimp",verbose)
 
+  logger::log_info("ranking PCA factors against Y using calc.relimp")
   if (max_factors_to_remove == 0) {
     max_factors_to_remove <- ncol(train_x_pca)
   }
@@ -116,7 +115,7 @@ RelimpPCR <- function(
       pca_ranked <- staticly_remove_features(
         train_x_pca, dfs,
         factors_to_remove, relimp_algorithm)
-      # pr(paste0("Removed ",factors_to_remove," PCA factor(s)."),verbose)
+        logger::log_info(paste("removed", factors_to_remove, "pca factor(s)"))
     }
   } else {
     pca_ranked <- staticly_remove_features(
@@ -135,9 +134,8 @@ RelimpPCR <- function(
   } else {
     predictors_range <- 1:max_predictors
   }
-  
-  # pr("Iteratively adding predictors according to order/ranking for...",verbose)
-  
+
+  logger::log_info("iteratively adding predictors according to order/ranking")
   if (multicore == TRUE) {
     r2s <- get_r2s_batch_mp(
       predictors_range,
@@ -146,8 +144,7 @@ RelimpPCR <- function(
       pca_ranked,
       train_x_pca,
       test_x_pca,
-      cores,
-      verbose
+      cores
     )
   } else {
     r2s <- get_r2s_batch(
@@ -156,8 +153,7 @@ RelimpPCR <- function(
       raw_ranked_features,
       pca_ranked,
       train_x_pca,
-      test_x_pca,
-      verbose
+      test_x_pca
     )
   }
 
@@ -176,7 +172,7 @@ RelimpPCR <- function(
     r2_values_out[[paste0(r2, "_test")]] <- this_r2_test
   }
 
-  log::log_info("determining optimal model")
+  logger::log_info("determining optimal model")
   best_model <- get_best_model(
     dfs = list(
       train_x = pca_ranked$train_x_ordered,
@@ -193,7 +189,7 @@ RelimpPCR <- function(
     # }
   }
   
-  out = list()
+  out <- list()
   
   out[["pca_loadings"]] = pca_loadings
   out[["pca_object"]] = pca
