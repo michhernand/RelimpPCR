@@ -72,17 +72,17 @@ get_relimp_factor_rank <- function(relimp_factors, relimp_algorithm) {
     if (relimp_algorithm == "lmg") {
         return(relimp_factors@lmg.rank)
     } else if (relimp_algorithm == "last") {
-        return(relimp_algorithm@last.rank)
+        return(relimp_factors@last.rank)
     } else if (relimp_algorithm == "first") {
-        return(relimp_algorithm@first.rank)
+        return(relimp_factors@first.rank)
     } else if (relimp_algorithm == "betasq") {
-        return(relimp_algorithm@betasq.rank)
+        return(relimp_factors@betasq.rank)
     } else if (relimp_algorithm == "pratt") {
-        return(relimp_algorithm@pratt.rank)
+        return(relimp_factors@pratt.rank)
     } else if (relimp_algorithm == "genizi") {
-        return(relimp_algorithm@genizi.rnak)
+        return(relimp_factors@genizi.rank)
     } else if (relimp_algorithm == "car") {
-        return(relimp_algorithm@car.rank)
+        return(relimp_factors@car.rank)
     } else {
         stop("unknown relaimpo type")
     }
