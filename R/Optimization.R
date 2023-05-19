@@ -2,6 +2,17 @@ get_r2s <- function(
     n_factors_to_keep,
     dfs
 ) {
+    if (is.null(dfs$test_x)) {
+        return(c(0, 0))
+    }
+
+    if (dim(dfs$train_x)[2] < n_factors_to_keep) {
+        stop("n_factors_to_keep is greater than the number of factors")
+    }
+    if (dim(dfs$test_x)[2] < n_factors_to_keep) {
+        stop("n_factors_to_keep is greater than the number of factors")
+    }
+
     if (n_factors_to_keep == 1) {
         train_x <- data.frame(dfs$train_x[, 1:n_factors_to_keep])
         test_x <- data.frame(dfs$test_x[, 1:n_factors_to_keep])
