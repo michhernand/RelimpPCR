@@ -71,7 +71,7 @@ iteratively_remove_features <- function(
                 test_x = NULL,
                 test_y = NULL
             ),
-            relimp_algorithm = relimp_algorithm,
+            relimp_algorithm = relimp_algorithm
         )
         if (pca_ranked_factors$ok) {
             break
@@ -100,7 +100,7 @@ staticly_remove_features <- function(
             test_x = NULL,
             test_y = NULL
         ),
-        relimp_algorithm = relimp_algorithm,
+        relimp_algorithm = relimp_algorithm
     )
     if (!pca_ranked_factors$ok) {
         stop(
