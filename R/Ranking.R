@@ -34,7 +34,10 @@ rank_features_by_relimp <- function(data, relimp_algorithm = "lmg") {
     },
     error = function(cond) {
         warning(
-            "WARN: Ranking predictors against Y using calc.relimp FAILED."
+            paste(
+                "WARN: Ranking predictors against Y using calc.relimp FAILED.",
+                cond
+            )
         )
         return(list(
             ok = FALSE,
