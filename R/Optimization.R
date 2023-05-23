@@ -44,7 +44,7 @@ get_r2s_batch_mp <- function(
     cores) {
     out <- list()
 
-    logger::log_info("original features")
+    logger::log_info("getting r2s for original features")
     out$original_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
@@ -52,7 +52,7 @@ get_r2s_batch_mp <- function(
       mc.cores = cores)
 
     if (raw_ranked$ok == TRUE) {
-        logger::log_info("ordered features")
+        logger::log_info("getting r2s for ordered features")
       out$relimp_r2 <- parallel::mclapply(
         X = predictors_range,
         FUN = get_r2s,
@@ -65,7 +65,7 @@ get_r2s_batch_mp <- function(
         mc.cores = cores)
     }
 
-    logger::log_info("pca factors")
+    logger::log_info("gettings r2s for pca factors")
     out$pca_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
@@ -77,7 +77,7 @@ get_r2s_batch_mp <- function(
       ),
       mc.cores = cores)
 
-    logger::log_info("ordered pca factors")
+    logger::log_info("getting r2s for ordered pca factors")
     out$pca_relimp_r2 <- parallel::mclapply(
       X = predictors_range,
       FUN = get_r2s,
@@ -102,14 +102,14 @@ get_r2s_batch <- function(
 ) {
     out <- list()
 
-    logger::log_info("original features")
+    logger::log_info("getting r2s for original features")
     out$original_r2 <- lapply(
         X = predictors_range,
         FUN = get_r2s,
         dfs = dfs
     )
     if (raw_ranked$ok == TRUE) {
-        logger::log_info("ordered features")
+        logger::log_info("getting r2s for ordered features")
         out$relimp_r2 <- lapply(
             X = predictors_range,
             FUN = get_r2s,
@@ -122,7 +122,7 @@ get_r2s_batch <- function(
         )
     }
 
-    logger::log_info("pca factors")
+    logger::log_info("getting r2s for pca factors")
     out$pca_r2 <- lapply(
         X = predictors_range,
         FUN = get_r2s,
@@ -134,7 +134,7 @@ get_r2s_batch <- function(
         )
     )
 
-    logger::log_info("ordered pca factors")
+    logger::log_info("getting r2s for ordered pca factors")
     out$pca_relimp_r2 <- lapply(
         X = predictors_range,
         FUN = get_r2s,
