@@ -9,6 +9,10 @@ X = mtcars[,2:6]
 Z = RelimpPCR(Y,X,0.8,random_seed = 123,plot_this = F,validation_split = 0.8,multicore = F)
 print("RelimpPCR successful. Checking output...")
 
+print("################################################")
+print(Z$relimp_pca_r2_train[1])
+print(Z)
+print("################################################")
 test_that("Check Relimp PCA R2 Train",{
   expect_equal(Z$relimp_pca_r2_train[1],0.8272183,tolerance=1e-6)
   expect_equal(Z$relimp_pca_r2_train[length(Z$relimp_pca_r2_train)], 0.9056683,tolerance=1e-6)

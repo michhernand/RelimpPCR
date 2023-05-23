@@ -188,20 +188,19 @@ RelimpPCR <- function(
     #   print(p1)
     # }
   }
-  
-  out <- list()
-  
-  out[["pca_loadings"]] = pca_loadings
-  out[["pca_object"]] = pca
-  out[["pca_factors_rank"]] = pca_ranked$ranked_factors #pca_ranked_factors
-  
-  out[["original_r2_train"]] = r2_values_out[["original_r2_train"]]
-  out[["pca_r2_train"]] = r2_values_out[["pca_r2_train"]]
-  out[["relimp_pca_r2_train"]] = r2_values_out[["pca_relimp_r2_train"]]
-  
-  out[["best_model"]]=best_model
-  out[["num_factors"]] = length(best_model$coefficients) - 1
-  
+
+  browser()
+  out <- list(
+    pca_loadings = pca_loadings,
+    pca_object = pca,
+    pca_factors_rank = pca_ranked$ranked_factors,
+    original_r2_train = r2_values_out$original_r2_train,
+    pca_r2_train = r2_values_out$pca_r2_train,
+    relimp_pca_r2_train = r2_values_out$pca_relimp_r2_train,
+    best_model = best_model,
+    num_factors = length(best_model$coefficients) - 1
+  )
+
   if(normalize_data==T){
     # TODO: Get scaling factors from normalization and include here
     # out[["scaling_factors"]] = list("X_means" = train_means, "X_st_devs" = train_sds, "Y_mean" = Y_mean, "Y_st_dev" = Y_sd)
