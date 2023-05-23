@@ -72,21 +72,13 @@ RelimpPCR = function(Y,X,target_r2,validation_split=1,relimp_algorithm="last",ma
   
   initial_colnames = colnames(X)
   
-  if(validation_split == 1){
-    trainX = X; testX = X
-    trainY = Y; testY = Y
-  } else if (validation_split <= 0) {
-    stop("Validation split cannot be 0 or negative.")
-  } else if (validation_split > 1) {
-    stop("Validation split cannot be greater than 1.")
-  } else {
-    pr("Performing Train/Test Split",verbose)
-    
-    ix = sample(x = 1:dim(X)[1],size = round(dim(X)[1] * validation_split,0))
-    trainX = X[ix,]; testX = X[-ix,]
-    trainY = Y[ix]; testY = Y[-ix]
-  }  
-  
+  data <- train_test_split(X, Y, validation_split)
+  trainX <- data$train_x
+  trainY <- data$train_y
+  testX <- data$test_x
+  testY <- data$test_y
+
+  data <- NULL
   X = NULL
   Y = NULL
   gc()
