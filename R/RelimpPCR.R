@@ -1,5 +1,5 @@
 #' A Relative Importance PCA Regression Function
-#' 
+#'
 #' This function performs a relative importance PCA regression. It performs PCA and then applys a relative
 #' importnace measure on each additional factor. The output shows optimal PCA factor selection for a given
 #' regression.
@@ -161,7 +161,7 @@ RelimpPCR = function(
   }
 
   pr("Ranking PCA factors against Y using calc.relimp", verbose)
-  
+
   if (max_factors_to_remove == 0) {
     max_factors_to_remove <- ncol(trainX_PCA)
   }
@@ -249,16 +249,16 @@ RelimpPCR = function(
     )
     train_r2 <- cor(predict(this_fit, trainX_df), trainY)^2
     test_r2 <- cor(predict(this_fit, testX_df), testY)^2
-    
+
     return(c(train_r2, test_r2))
   }
-  
+
   get_best_model <- function(
     trainX,
     trainY,
     train_r2,
     test_r2
-  ){
+  ) {
     best_r2 <- which.max(train_r2)
     return(
       lm(
@@ -396,7 +396,7 @@ RelimpPCR = function(
       1:length(r2_values_out[["pca_relimp_r2_train"]])
     )
     p1_data <- as.data.frame(p1_data)
-    if (ranking_successful == T) {
+    if (ranking_successful == TRUE) {
       colnames(p1_data) <- c(
         "Original_R2", "Relimp_R2", "PCA_R2",
         "PCA_Relimp_R2", "Num_Predictors")
