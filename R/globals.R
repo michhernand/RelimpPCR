@@ -1,1 +1,1 @@
-utils::globalVariables(c("stats", "cor", "lm", "prcomp", "predict", "sd"))
+utils::globalVariables(c("is", "stats", "cor", "lm", "prcomp", "predict", "sd"))

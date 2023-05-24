@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/mhernan88/RelimpPCR.svg?branch=master)](https://travis-ci.org/mhernan88/RelimpPCR)
-[![codecov](https://codecov.io/gh/mhernan88/RelimpPCR/branch/master/graph/badge.svg)](https://codecov.io/gh/mhernan88/RelimpPCR)
 ![cran](https://www.r-pkg.org/badges/version/RelimpPCR)
 
 
