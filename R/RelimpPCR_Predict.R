@@ -15,33 +15,35 @@
 #' pred = RelimpPCR.predict(pcr_object, data.frame(mtcars$cyl, mtcars$disp))
 #' }
 #' @export
-
-RelimpPCR.predict = function(pcr, newdata){
-  single_prediction=FALSE
-  if(class(newdata) != "data.frame"){
-    single_prediction=TRUE
-    newdata = data.frame(t(unlist(newdata)))
+RelimpPCR.predict <- function(pcr, newdata) {
+  single_prediction <- FALSE
+  if (!is(newdata, "data.frame")) {
+    single_prediction <- TRUE
+    newdata <- data.frame(t(unlist(newdata)))
   }
-  colnames(newdata) = pcr$initial_colnames
-  
-  if(is.null(pcr$scaling_factors) == FALSE){
-    for(j in 1:ncol(newdata)){
-      newdata[,j] = (newdata[,j] - pcr$scaling_factors$X_means[j])/pcr$scaling_factors$X_st_devs[j]
+  colnames(newdata) <- pcr$initial_colnames
+
+  if (is.null(pcr$scaling_factors) == FALSE) {
+    for (j in 1:ncol(newdata)) {
+      newdata[, j] <- (
+        newdata[, j] - pcr$scaling_factors$X_means[j]
+      ) / pcr$scaling_factors$X_st_devs[j]
     }
   }
-  
-  pca = predict(pcr$pca_object,newdata)
-  ordered_pca = as.data.frame(pca[,order(pcr$pca_factors_rank)])
-  
-  if(single_prediction==TRUE){
-    pca_colnames = row.names(ordered_pca)
-    ordered_pca = data.frame(t(unlist(ordered_pca)))
-    colnames(ordered_pca) = pca_colnames
+
+  pca <- predict(pcr$pca_object, newdata)
+  ordered_pca <- as.data.frame(pca[, order(pcr$pca_factors_rank)])
+
+  if (single_prediction == TRUE) {
+    pca_colnames <- row.names(ordered_pca)
+    ordered_pca <- data.frame(t(unlist(ordered_pca)))
+    colnames(ordered_pca) <- pca_colnames
   }
-  ordered_pca = ordered_pca[,1:pcr$num_factors]
-  
-  colnames(ordered_pca) = names(pcr$pca_factors_rank)[order(pcr$pca_factors_rank)]
-  
-  pred = predict(pcr$best_model,ordered_pca)
+  ordered_pca <- ordered_pca[, 1:pcr$num_factors]
+
+  colnames(ordered_pca) <- names(
+    pcr$pca_factors_rank)[order(pcr$pca_factors_rank)]
+
+  pred <- predict(pcr$best_model, ordered_pca)
   return(pred)
 }
