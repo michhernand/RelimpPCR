@@ -48,9 +48,17 @@ train_test_split <- function(x, y, validation_split) {
   ))
 }
 
+pr <- function(prompt, verbose) {
+    if(verbose){
+        print(paste0(Sys.time(), " | ", prompt))
+    }
+}
+
 create_normalized_data <- function(
     trainX,
     testX,
+    trainY,
+    testY,
     verbose
 ) {
     pr("Standardizing data", verbose)
@@ -75,7 +83,7 @@ create_normalized_data <- function(
    return(list(
        "trainX" = trainX,
        "testX" = testX,
-       "trianY" = trainY,
+       "trainY" = trainY,
        "testY" = testY,
        "train_means" = train_means,
        "train_sds" = train_sds,

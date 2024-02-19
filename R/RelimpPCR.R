@@ -1,3 +1,4 @@
+
 #' A Relative Importance PCA Regression Function
 #'
 #' This function performs a relative importance PCA regression. It performs PCA and then applys a relative
@@ -80,12 +81,6 @@ RelimpPCR = function(
     set.seed(random_seed)
   }
 
-  pr <- function(prompt, verbose) {
-    if(verbose){
-      print(paste0(Sys.time(), " | ", prompt))
-    }
-  }
-
   initial_colnames <- colnames(X)
 
   data <- train_test_split(X, Y, validation_split)
@@ -103,7 +98,7 @@ RelimpPCR = function(
     warning(
       "WARN: Using non-normalized data in PCA can cause sub-optimal results")
   } else {
-    normalized_data <- create_normalized_data(trainX, testX, verbose)
+    normalized_data <- create_normalized_data(trainX, testX, trainY, testY, verbose)
     trainX <- normalized_data$trainX
     testX <- normalized_data$testX
     trainY <- normalized_data$trainY
