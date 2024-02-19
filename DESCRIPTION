@@ -1,7 +1,7 @@
 Package: RelimpPCR
 Type: Package
 Title: Relative Importance PCA Regression
-Version: 0.3.0
+Version: 0.3.1
 Date: 2023-05-23
 Author: Michael Hernandez <micahel@hernandez.ai>, Yuri Balasanov
 Maintainer: Michael Hernandez <michael@hernandez.ai>
