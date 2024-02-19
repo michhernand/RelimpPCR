@@ -47,3 +47,39 @@ train_test_split <- function(x, y, validation_split) {
     test_y = test_y
   ))
 }
+
+create_normalized_data <- function(
+    trainX,
+    testX,
+    verbose
+) {
+    pr("Standardizing data", verbose)
+    train_means <- c()
+    train_sds <- c()
+
+    for (z in 1:dim(trainX)[2]) {
+        this_mean <- mean(trainX[, z])
+        this_sd <- sd(trainX[, z])
+
+        train_means[length(train_means) + 1] <- this_mean
+        train_sds[length(train_sds) + 1] <- this_sd
+
+        trainX[, z] <- (trainX[, z] - this_mean) / this_sd
+        testX[, z] <- (testX[, z] - this_mean) / this_sd
+    }
+    Y_mean <- mean(trainY)
+    Y_sd <- sd(trainY)
+
+    trainY <- (trainY - Y_mean) / Y_sd
+    testY <- (testY - Y_mean) / Y_sd
+   return(list(
+       "trainX" = trainX,
+       "testX" = testX,
+       "trianY" = trainY,
+       "testY" = testY,
+       "train_means" = train_means,
+       "train_sds" = train_sds,
+       "y_mean" = Y_mean,
+       "y_sd" = Y_sd
+   ))
+}
