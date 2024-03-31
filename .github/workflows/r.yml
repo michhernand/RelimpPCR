@@ -17,6 +17,11 @@ on:
 permissions:
   contents: read
 
+env:
+  NOT_CRAN: true
+  TZ: UTC
+  R_LIBS_USER: tempdir/Library
+  _R_CHECK_SYSTEM_CLOCK_: FALSE
 jobs:
   build:
     runs-on: macos-latest
