@@ -17,20 +17,15 @@ on:
 permissions:
   contents: read
 
-env:
-  NOT_CRAN: true
-  TZ: UTC
-  R_LIBS_USER: tempdir/Library
-  _R_CHECK_SYSTEM_CLOCK_: FALSE
 jobs:
   build:
     runs-on: macos-latest
     strategy:
       matrix:
-        r-version: ['release']
+        r-version: ['4.1.2']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Set up R ${{ matrix.r-version }}
         uses: r-lib/actions/setup-r@f57f1301a053485946083d7a45022b278929a78a
         with:
