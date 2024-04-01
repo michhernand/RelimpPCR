@@ -32,7 +32,7 @@ jobs:
           r-version: ${{ matrix.r-version }}
       - name: Install dependencies
         run: |
-          install.packages(c("relaimpo", "Rmisc", "caret", "ggplot2", "reshape2"))
+          install.packages(c("remotes", "relaimpo", "Rmisc", "caret", "ggplot2", "reshape2"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
