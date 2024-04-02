@@ -3,5 +3,6 @@
 ^README.md$
 ^.travis.yml$
 ^repo_files$
-^\.travis\.yml$
 ^..Rcheck/
+^.git/
+
