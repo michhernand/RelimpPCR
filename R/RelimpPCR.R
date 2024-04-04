@@ -1,76 +1,76 @@
-
-#' A Relative Importance PCA Regression Function
-#'
-#' This function performs a relative importance PCA regression. It performs PCA and then applys a relative
-#' importnace measure on each additional factor. The output shows optimal PCA factor selection for a given
-#' regression.
-#' @param Y (list/vector): This a list/vector of Y values for the regression.
-#' @param X (data frame): This is the input data for the regression.
-#' @param target_r2 (float 0-1): The algorithm will attempt to return to you the simplest model (i.e. with fewest predictors) that satisfies
-#' your target_r2 value; If no model satisfies this condition, then the full model (with all predictors) will be returned.
-#' @param validation_split (float 0-1): This determines how much of your data set will be in the train data set. The remainder will be
-#' allocated to the test data set. If set to 1, train and test samples will be identical.
-#' @param relimp_algorithm (string): This is the "type" of relative importance that will be used for measuring
-#' raw predictors (not PCA factors).
-#' @param max_predictors (int): The maximum number of predictors/factors you want reviewed. Note: For importance
-#' measures all predictors/factors will be analyzed for relative importance. Rather, this limits how many
-#' predictors/factors are added onto the model to show iteratively increasing R-Suared.
-#' @param remove_factors (bool): If any eigenvalue, resulting from performing PCA on your data set, is too small for relative
-#' importance, it can be removed automatically if this is TRUE. If FALSE, the same situation will produce an error.
-#' @param factors_to_remove (int): If remove_factors is TRUE, you can either a) set this to 0 to have the script iteratively
-#' remove PCA factors until the relative importance calculation works (recommended if you do not know how many PCA factors to
-#' remove, but takes longer), or b) set this to any positive integer smaller than the number of factors. In condition b, the
-#' script will go ahead and remove the X smallest factors (X being the number this argument is set to).
-#' @param max_factors_to_remove (int): If remove_factors is TRUE and factors_to_remove is 0, then this will determine how many
-#' factors the script will delete before "giving up". This is to prevent a possible very long process. This can be set to 0
-#' to iterate through all columns (not recommended).
-#' @param normalize_data (bool): Whether or not to normalize (subtract mean and divide by standard deviation) before analysis.
-#' @param plot_this (bool): Whether or not to plot the r-squared values. Default is TRUE.
-#' @param verbose (bool): Whether or not to include some additional narration around the status of the process.
-#' Default is FALSE.
-#' @param multicore (bool): Whether or not to use mclapply instead of sapply. Default is TRUE.
-#' @param cores (int): The number of cores to distribute work across for multicore operations.
-#' @param random_seed (int): Random seed (if you wish to use one). NA indicates no random seed.
-#' @return out (list): A list containing all of the below components...
-#' @return $pca_loadings: The PCA loadings.
-#' @return $pca_object: The trained PCA object.
-#' @return $pca_factors_rank: The numerical ranking of the PCA factors.
-#' @return $original_r2_train: The r-squared values when iteratively adding unordered training predictors.
-#' @return $pca_r2_train: The r-squared values when iteratively adding unordered training PCA factors.
-#' @return $relimp_pca_r2_train: The r-squared values when iteratively adding ordered training PCA factors (ordered by relative importance of the training data set).
-#' @return $best_model: The model with the fewest predictors that has r-squared equal to or above the "target_r2" argument.
-#' @return $num_factors: The number of PCA factors used in the best model.
-#' @return $scaling_factors: The mean and standard deviations used to scale the X columns and Y column.
-#' @return $relimp_r2_train: ONLY RETURNED IF relative importance for ordered predictors is successful. This contains the r-squared values when iteratively adding ordered predictors (ordered by relative importance of the training data set).
-#' @return $ranked_features: ONLY RETURNED IF relative importance for ordered predictors is successful. This contains the numerical ranking of predictors.
-#' @return $original_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1. This contains the r-squared values when iteratively adding unordered testing predictors.
-#' @return $pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1: This contains the r-squared values when iteratively adding unordered testing PCA factors.
-#' @return $relimp_pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1. This contains the r-squared values when iteratively adding ordered testing PCA factors (ordered by relative importance of the training data set).
-#' @return $relimp_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1 AND relative importance for ordered predictors is successful. This contains the r-squared values when iteratively adding ordered testing predictors (ordered by relative importance of the training data set).
-#' @export
-
-RelimpPCR <- function(
-  Y,
-  X,
-  target_r2,
-  validation_split = 1,
-  relimp_algorithm = "last",
-  max_predictors = 0,
-  remove_factors = TRUE,
-  factors_to_remove = 0,
-  max_factors_to_remove = 15,
-  normalize_data = TRUE,
-  plot_this = TRUE,
-  verbose = FALSE,
-  multicore = TRUE,
-  cores = 2,
-  random_seed = NA
-) {
-  suppressWarnings(RNGversion("3.5.0"))
-  if (is.na(random_seed) == FALSE) {
-    set.seed(random_seed)
-  }
-}
+#
+# #' A Relative Importance PCA Regression Function
+# #'
+# #' This function performs a relative importance PCA regression. It performs PCA and then applys a relative
+# #' importnace measure on each additional factor. The output shows optimal PCA factor selection for a given
+# #' regression.
+# #' @param Y (list/vector): This a list/vector of Y values for the regression.
+# #' @param X (data frame): This is the input data for the regression.
+# #' @param target_r2 (float 0-1): The algorithm will attempt to return to you the simplest model (i.e. with fewest predictors) that satisfies
+# #' your target_r2 value; If no model satisfies this condition, then the full model (with all predictors) will be returned.
+# #' @param validation_split (float 0-1): This determines how much of your data set will be in the train data set. The remainder will be
+# #' allocated to the test data set. If set to 1, train and test samples will be identical.
+# #' @param relimp_algorithm (string): This is the "type" of relative importance that will be used for measuring
+# #' raw predictors (not PCA factors).
+# #' @param max_predictors (int): The maximum number of predictors/factors you want reviewed. Note: For importance
+# #' measures all predictors/factors will be analyzed for relative importance. Rather, this limits how many
+# #' predictors/factors are added onto the model to show iteratively increasing R-Suared.
+# #' @param remove_factors (bool): If any eigenvalue, resulting from performing PCA on your data set, is too small for relative
+# #' importance, it can be removed automatically if this is TRUE. If FALSE, the same situation will produce an error.
+# #' @param factors_to_remove (int): If remove_factors is TRUE, you can either a) set this to 0 to have the script iteratively
+# #' remove PCA factors until the relative importance calculation works (recommended if you do not know how many PCA factors to
+# #' remove, but takes longer), or b) set this to any positive integer smaller than the number of factors. In condition b, the
+# #' script will go ahead and remove the X smallest factors (X being the number this argument is set to).
+# #' @param max_factors_to_remove (int): If remove_factors is TRUE and factors_to_remove is 0, then this will determine how many
+# #' factors the script will delete before "giving up". This is to prevent a possible very long process. This can be set to 0
+# #' to iterate through all columns (not recommended).
+# #' @param normalize_data (bool): Whether or not to normalize (subtract mean and divide by standard deviation) before analysis.
+# #' @param plot_this (bool): Whether or not to plot the r-squared values. Default is TRUE.
+# #' @param verbose (bool): Whether or not to include some additional narration around the status of the process.
+# #' Default is FALSE.
+# #' @param multicore (bool): Whether or not to use mclapply instead of sapply. Default is TRUE.
+# #' @param cores (int): The number of cores to distribute work across for multicore operations.
+# #' @param random_seed (int): Random seed (if you wish to use one). NA indicates no random seed.
+# #' @return out (list): A list containing all of the below components...
+# #' @return $pca_loadings: The PCA loadings.
+# #' @return $pca_object: The trained PCA object.
+# #' @return $pca_factors_rank: The numerical ranking of the PCA factors.
+# #' @return $original_r2_train: The r-squared values when iteratively adding unordered training predictors.
+# #' @return $pca_r2_train: The r-squared values when iteratively adding unordered training PCA factors.
+# #' @return $relimp_pca_r2_train: The r-squared values when iteratively adding ordered training PCA factors (ordered by relative importance of the training data set).
+# #' @return $best_model: The model with the fewest predictors that has r-squared equal to or above the "target_r2" argument.
+# #' @return $num_factors: The number of PCA factors used in the best model.
+# #' @return $scaling_factors: The mean and standard deviations used to scale the X columns and Y column.
+# #' @return $relimp_r2_train: ONLY RETURNED IF relative importance for ordered predictors is successful. This contains the r-squared values when iteratively adding ordered predictors (ordered by relative importance of the training data set).
+# #' @return $ranked_features: ONLY RETURNED IF relative importance for ordered predictors is successful. This contains the numerical ranking of predictors.
+# #' @return $original_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1. This contains the r-squared values when iteratively adding unordered testing predictors.
+# #' @return $pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1: This contains the r-squared values when iteratively adding unordered testing PCA factors.
+# #' @return $relimp_pca_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1. This contains the r-squared values when iteratively adding ordered testing PCA factors (ordered by relative importance of the training data set).
+# #' @return $relimp_r2_test: ONLY RETURNED IF validation_split argument is not equal to 1 AND relative importance for ordered predictors is successful. This contains the r-squared values when iteratively adding ordered testing predictors (ordered by relative importance of the training data set).
+# #' @export
+#
+# RelimpPCR <- function(
+#   Y,
+#   X,
+#   target_r2,
+#   validation_split = 1,
+#   relimp_algorithm = "last",
+#   max_predictors = 0,
+#   remove_factors = TRUE,
+#   factors_to_remove = 0,
+#   max_factors_to_remove = 15,
+#   normalize_data = TRUE,
+#   plot_this = TRUE,
+#   verbose = FALSE,
+#   multicore = TRUE,
+#   cores = 2,
+#   random_seed = NA
+# ) {
+#   suppressWarnings(RNGversion("3.5.0"))
+#   if (is.na(random_seed) == FALSE) {
+#     set.seed(random_seed)
+#   }
+# }
 #
 #   initial_colnames <- colnames(X)
 #
