@@ -1,0 +1,3 @@
+useDynLib(RelimpPCR, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
