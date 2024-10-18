@@ -5,15 +5,7 @@ rcpp_hello_world <- function() {
     .Call(`_RelimpPCR_rcpp_hello_world`)
 }
 
-dougrizo <- function(a, b) {
-    .Call(`_RelimpPCR_dougrizo`, a, b)
-}
-
-train_test_split_df <- function(df, train_size = 0.7) {
-    .Call(`_RelimpPCR_train_test_split_df`, df, train_size)
-}
-
-train_test_split <- function(x, y) {
-    .Call(`_RelimpPCR_train_test_split`, x, y)
+train_test_split_r <- function(x, y, train_size = 0.7) {
+    .Call(`_RelimpPCR_train_test_split_r`, x, y, train_size)
 }
 

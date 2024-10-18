@@ -20,48 +20,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// dougrizo
-int dougrizo(int a, int b);
-RcppExport SEXP _RelimpPCR_dougrizo(SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(dougrizo(a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
-// train_test_split_df
-List train_test_split_df(DataFrame df, double train_size);
-RcppExport SEXP _RelimpPCR_train_test_split_df(SEXP dfSEXP, SEXP train_sizeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
-    Rcpp::traits::input_parameter< double >::type train_size(train_sizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(train_test_split_df(df, train_size));
-    return rcpp_result_gen;
-END_RCPP
-}
-// train_test_split
-List train_test_split(DataFrame x, NumericVector y);
-RcppExport SEXP _RelimpPCR_train_test_split(SEXP xSEXP, SEXP ySEXP) {
+// train_test_split_r
+List train_test_split_r(DataFrame x, NumericVector y, double train_size);
+RcppExport SEXP _RelimpPCR_train_test_split_r(SEXP xSEXP, SEXP ySEXP, SEXP train_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< DataFrame >::type x(xSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(train_test_split(x, y));
+    Rcpp::traits::input_parameter< double >::type train_size(train_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(train_test_split_r(x, y, train_size));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RelimpPCR_rcpp_hello_world", (DL_FUNC) &_RelimpPCR_rcpp_hello_world, 0},
-    {"_RelimpPCR_dougrizo", (DL_FUNC) &_RelimpPCR_dougrizo, 2},
-    {"_RelimpPCR_train_test_split_df", (DL_FUNC) &_RelimpPCR_train_test_split_df, 2},
-    {"_RelimpPCR_train_test_split", (DL_FUNC) &_RelimpPCR_train_test_split, 2},
+    {"_RelimpPCR_train_test_split_r", (DL_FUNC) &_RelimpPCR_train_test_split_r, 3},
     {NULL, NULL, 0}
 };
 

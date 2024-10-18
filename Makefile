@@ -3,8 +3,9 @@ build:
 	R CMD build ./RelimpPCR
 	R CMD INSTALL RelimpPCR_1.0.tar.gz
 
-remove:
+clean:
+	rm -f RelimpPCR_*.tar.gz
 	cd ./RelimpPCR && Rscript -e "remove.packages('RelimpPCR')"
 
 test:
-	Rscript -e "RelimpPCR::train_test_split(mtcars, as.vector(mtcars[,3]))"
+	Rscript -e "RelimpPCR::train_test_split_r(mtcars, as.vector(mtcars[,3]))"
