@@ -1,9 +1,9 @@
 #ifndef NORMALIZE_H
 #define NORMALIZE_H
-#include <Rcpp.h>
+#include <armadillo>
 
-Rcpp::NumericVector normalize_vector(Rcpp::NumericVector)
+arma::dvec normalize_vector(arma::dvec)
 
-Rcpp::DataFrame normalize_df(Rcpp::DataFrame)
+arma::dmat normalize_df(arma::dmat)
 
 #endif

@@ -1,40 +1,17 @@
-#include "Rcpp.h"
-#include "Rcpp/DataFrame.h"
-using namespace Rcpp;
+#include <armadillo>
 
-double calc_mean(NumericVector x, int n) {
-    double sum = 0.0;
-    for (int i = 0; i < n; ++i) {
-        sum += x[i];
-    }
-    return sum / n;
+arma::dvec normalize_vector(
+    arma::dvec x
+) {
+    double mean = arma::mean(x);
+    double sd = arma::stddev(x);
+    return (x - mean) / sd;
 }
 
-double calc_sd(NumericVector x, double mean, int n) {
-    double sq_sum = 0.0;
-    for (int i = 0; i < n; ++i) {
-        sq_sum += (x[i] - mean) * (x[i] - mean);
-    }
-    return std::sqrt(sq_sum / (n - 1));
-}
-
-// [[Rcpp::export]]
-NumericVector normalize_vector(NumericVector x) {
-    int n = x.length();
-    double mean = calc_mean(x, n);
-    double sd = calc_sd(x, mean, n);
-
-    for (int i = 0; i < n; ++i) {
-        x[i] = (x[i] - mean) / sd;
-    }
-    return x;
-}
-
-// [[Rcpp::export]]
-DataFrame normalize_df(DataFrame df) {
-    int n = df.length();
-    for (int i = 0; i < n; ++i) {
-        df[i] = normalize_vector(df[i]);
+arma::dmat normalize_df(arma::dmat df) {
+    const size_t n = df.n_cols;
+    for (size_t i = 0; i < n; i++) {
+        df.col(i) = normalize_vector(df.col(i));
     }
     return df;
 }

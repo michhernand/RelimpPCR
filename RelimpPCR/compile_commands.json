@@ -1,0 +1,32 @@
+[
+  {
+    "directory": "/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/Rcpp/include/",
+    "command": "clang -I/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/Rcpp/include",
+    "file": "Rcpp.h"
+  },
+  {
+    "directory": "/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/",
+    "command": "clang -I/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include",
+    "file": "RcppArmadillo.h"
+  },
+  {
+    "directory": "/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo/",
+    "command": "clang -I/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo",
+    "file": "Light"
+  },
+  {
+    "directory": "/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo/",
+    "command": "clang -I/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo",
+    "file": "Lighter"
+  },
+  {
+    "directory": "/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo/",
+    "command": "clang -I/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo",
+    "file": "Lightest"
+  },
+  {
+    "directory": "/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo/",
+    "command": "clang -I/Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/RcppArmadillo/include/RcppArmadillo",
+    "file": "RcppArmadillo"
+  }
+]

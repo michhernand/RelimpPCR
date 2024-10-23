@@ -5,6 +5,7 @@ build:
 
 clean:
 	rm -f RelimpPCR_*.tar.gz
+	Rscript -e "devtools::clean_dll()"
 	cd ./RelimpPCR && Rscript -e "remove.packages('RelimpPCR')"
 
 test:
