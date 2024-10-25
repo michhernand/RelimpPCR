@@ -8,5 +8,9 @@ Maintainer: Your Name <your@email.com>
 Description: One paragraph description of what the package does as one
         or more full sentences.
 License: GPL (>= 2)
-Imports: Rcpp (>= 1.0.13)
-LinkingTo: Rcpp
+Imports:
+    Rcpp (>= 1.0.13),
+    RcppArmadillo
+LinkingTo:
+    Rcpp,
+    RcppArmadillo

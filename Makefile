@@ -9,4 +9,5 @@ clean:
 	cd ./RelimpPCR && Rscript -e "remove.packages('RelimpPCR')"
 
 test:
-	Rscript -e "RelimpPCR::train_test_split_r(mtcars, as.vector(mtcars[,3]))"
+	Rscript -e "RelimpPCR::train_test_split_r(as.matrix(mtcars), as.vector(mtcars[,3]), 0.7)"
+	Rscript -e "RelimpPCR::normalize_df_r(as.matrix(mtcars))"

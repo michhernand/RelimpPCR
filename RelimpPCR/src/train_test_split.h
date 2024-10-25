@@ -8,6 +8,6 @@
 std::pair<
     std::unordered_map<std::string, arma::dmat>,
     std::unordered_map<std::string, arma::dvec>
-> train_test_split(arma::dmat x, arma::dvec y, double train_size);
+> train_test_split(const arma::dmat& x, const arma::dvec& y, double train_size);
 
 #endif

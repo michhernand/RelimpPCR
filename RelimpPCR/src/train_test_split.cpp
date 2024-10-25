@@ -1,18 +1,16 @@
+#define ARMA_64BIT_WORD
 #include <armadillo>
 #include <utility>
 #include <unordered_map>
 
-
 /**
-* @brief Documents how to perform a train/test split. Provides indices for elements in train and elements in test.
+* @brief Splits a dataset into train and test portions.
 * @param n The size of the collection to be split.
-* @param train_size The proprortion of the collection allocated to the training dataset.
-* @return A pair of IntegerVector arrays. Each array documents the indices of the collection that belong to it.
+* @param train_size The proprortion to allocate to the train.
+* @return A pair of vec listing indices of train/test.
 */
-
-std::pair<arma::uvec, arma::uvec> get_train_test_split_indices(int n, double train_size) {
+std::pair<arma::uvec, arma::uvec> get_train_test_split_indices(arma::uword n, double train_size) {
     int train_n = static_cast<int>(n * train_size);
-
     arma::uvec indices = arma::shuffle(arma::regspace<arma::uvec>(0, n-1));
 
     arma::uvec train_indices = indices.head(train_n);
@@ -23,7 +21,6 @@ std::pair<arma::uvec, arma::uvec> get_train_test_split_indices(int n, double tra
 
     return std::make_pair(train_indices, test_indices);
 }
-
 
 std::unordered_map<std::string, arma::dmat> train_test_split_df(
     arma::dmat df,
@@ -54,9 +51,11 @@ std::unordered_map<std::string, arma::dvec> train_test_split_array(
 std::pair<
     std::unordered_map<std::string, arma::dmat>,
     std::unordered_map<std::string, arma::dvec>
-> train_test_split(arma::dmat x, arma::dvec y, double train_size = 0.7) {
-    auto indices = get_train_test_split_indices(y.size(), train_size);
-    auto x_split = train_test_split_df(x, indices.first, indices.second);
-    auto y_split = train_test_split_array(y, indices.first, indices.second);
+> train_test_split(const arma::dmat& x, const arma::dvec& y, double train_size) {
+    arma::uword nn = y.n_elem;
+    std::pair<arma::uvec, arma::uvec> indices = get_train_test_split_indices(nn, train_size);
+
+    std::unordered_map<std::string, arma::dmat> x_split = train_test_split_df(x, indices.first, indices.second);
+    std::unordered_map<std::string, arma::dvec> y_split = train_test_split_array(y, indices.first, indices.second);
     return std::make_pair(x_split, y_split);
 }

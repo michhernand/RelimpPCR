@@ -1,3 +1,4 @@
+#define ARMA_64BIT_WORD
 #include <armadillo>
 
 arma::dmat pca(arma::dmat x) {
