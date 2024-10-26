@@ -38,7 +38,7 @@ std::pair<
             double
         >
     > params;
-    params.reserve(df.n_cols);
+    params.resize(df.n_cols);
 
     for (size_t i = 0; i < n; i++) {
         std::tuple<
@@ -85,4 +85,63 @@ arma::dmat normalize_df_pred(
         df.col(i) = (df.col(i) - param.first) / param.second;
     }
     return df;
+}
+
+std::pair<
+    std::unordered_map<std::string, arma::dmat>,
+    std::unordered_map<std::string, arma::dvec>
+> normalize(
+    std::pair<
+        std::unordered_map<std::string, arma::dmat>,
+        std::unordered_map<std::string, arma::dvec>
+    > split_data
+) {
+    std::unordered_map<std::string, arma::dmat> x_split = split_data.first;
+    std::unordered_map<std::string, arma::dvec> y_split = split_data.second;
+
+    // X-TRAIN
+    std::pair<
+        arma::dmat,
+        std::vector<
+            std::pair<
+                double,
+                double
+            >
+        >
+    > x_train_norm_payload = normalize_df(x_split["train"]);
+
+    // X-TEST
+    arma::dmat x_test_norm = normalize_df_pred(
+        x_split["test"],
+        x_train_norm_payload.second
+    );
+
+    // X ALL
+    std::unordered_map<std::string, arma::dmat> x_norm;
+    x_norm["train"] = x_train_norm_payload.first;
+    x_norm["test"] = x_test_norm;
+
+    // Y-TRAIN
+    std::tuple<
+        arma::dvec, 
+        double, 
+        double
+    > y_train_norm_payload = normalize_vector(y_split["train"]);
+
+    // Y-TEST
+    arma::dvec y_test_norm = normalize_vector_pred(
+        y_split["test"],
+        std::get<1>(y_train_norm_payload),
+        std::get<2>(y_train_norm_payload)
+    );
+
+    // Y ALL
+    std::unordered_map<std::string, arma::dvec> y_norm;
+    y_norm["train"] = std::get<0>(y_train_norm_payload);
+    y_norm["test"] = y_test_norm;
+
+    return std::make_pair(
+        x_norm,
+        y_norm
+    );
 }

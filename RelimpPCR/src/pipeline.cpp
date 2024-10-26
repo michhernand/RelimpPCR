@@ -12,18 +12,19 @@ int RelimpPCR(
     std::pair<
         std::unordered_map<std::string, arma::dmat>,
         std::unordered_map<std::string, arma::dvec>
-    >  split_data = train_test_split(x, y, train_size);
+    > split_data = train_test_split(x, y, train_size);
 
-    std::unordered_map<std::string, arma::dmat> x_split = split_data.first;
-    std::unordered_map<std::string, arma::dvec> y_split = split_data.second;
+    std::pair<
+        std::unordered_map<std::string, arma::dmat>,
+        std::unordered_map<std::string, arma::dvec>
+    > normalized_data = normalize(split_data);
 
-    auto x_train = x_split["train"];
-    auto x_test = x_split["test"];
-    auto y_train = y_split["train"];
-    auto y_test = y_split["test"];
-
-    auto x_train_norm = normalize_df(x_train);
-    auto y_train_norm = normalize_vector(y_train);
+    // arma::mat coeff;
+    // arma::mat score;
+    // arma::vec latent;
+    // arma::vec tsquared;
+    //
+    // arma::dmat x_train_pca = arma::princomp(coeff, score, latent, tsquared, x_train);
 
     return 0;
 }

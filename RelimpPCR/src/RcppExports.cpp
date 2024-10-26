@@ -11,14 +11,16 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// normalize_df_r
-Rcpp::NumericMatrix normalize_df_r(Rcpp::NumericMatrix x);
-RcppExport SEXP _RelimpPCR_normalize_df_r(SEXP xSEXP) {
+// split_and_normalize_r
+Rcpp::List split_and_normalize_r(Rcpp::NumericMatrix x, Rcpp::NumericVector y, double train_size);
+RcppExport SEXP _RelimpPCR_split_and_normalize_r(SEXP xSEXP, SEXP ySEXP, SEXP train_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(normalize_df_r(x));
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type train_size(train_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(split_and_normalize_r(x, y, train_size));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -50,7 +52,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RelimpPCR_normalize_df_r", (DL_FUNC) &_RelimpPCR_normalize_df_r, 1},
+    {"_RelimpPCR_split_and_normalize_r", (DL_FUNC) &_RelimpPCR_split_and_normalize_r, 3},
     {"_RelimpPCR_RelimpPCR", (DL_FUNC) &_RelimpPCR_RelimpPCR, 3},
     {"_RelimpPCR_train_test_split_r", (DL_FUNC) &_RelimpPCR_train_test_split_r, 3},
     {NULL, NULL, 0}

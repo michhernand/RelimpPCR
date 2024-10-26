@@ -10,4 +10,4 @@ clean:
 
 test:
 	Rscript -e "RelimpPCR::train_test_split_r(as.matrix(mtcars), as.vector(mtcars[,3]), 0.7)"
-	Rscript -e "RelimpPCR::normalize_df_r(as.matrix(mtcars))"
+	Rscript -e "RelimpPCR::split_and_normalize_r(as.matrix(mtcars), as.vector(mtcars[,3]), 0.7)"
