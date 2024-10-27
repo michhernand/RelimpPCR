@@ -5,7 +5,7 @@
 #include <utility>
 #include <unordered_map>
 
-int RelimpPCR(
+arma::dmat RelimpPCR(
     arma::dmat x,
     arma::dvec y,
     double train_size

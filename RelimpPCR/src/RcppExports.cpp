@@ -25,7 +25,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // RelimpPCR
-int RelimpPCR(Rcpp::NumericMatrix x, Rcpp::NumericVector y, double train_size);
+Rcpp::NumericMatrix RelimpPCR(Rcpp::NumericMatrix x, Rcpp::NumericVector y, double train_size);
 RcppExport SEXP _RelimpPCR_RelimpPCR(SEXP xSEXP, SEXP ySEXP, SEXP train_sizeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

@@ -4,7 +4,7 @@
 #include "normalize.h"
 #include <unordered_map>
 
-int RelimpPCR(
+arma::dmat RelimpPCR(
     arma::dmat x,
     arma::dvec y,
     double train_size
@@ -19,12 +19,18 @@ int RelimpPCR(
         std::unordered_map<std::string, arma::dvec>
     > normalized_data = normalize(split_data);
 
-    // arma::mat coeff;
-    // arma::mat score;
-    // arma::vec latent;
-    // arma::vec tsquared;
-    //
-    // arma::dmat x_train_pca = arma::princomp(coeff, score, latent, tsquared, x_train);
+    arma::mat coeff;
+    arma::mat score;
+    arma::vec latent;
+    arma::vec tsquared;
 
-    return 0;
+    bool ok = arma::princomp(
+        coeff, 
+        score, 
+        latent, 
+        tsquared, 
+        normalized_data.first["train"]
+    );
+
+    return normalized_data.first["train"];
 }
