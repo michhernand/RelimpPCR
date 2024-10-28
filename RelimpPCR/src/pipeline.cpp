@@ -2,6 +2,7 @@
 #include "Rcpp.h"
 #include "train_test_split.h"
 #include "normalize.h"
+#include <armadillo>
 #include <unordered_map>
 
 arma::dmat RelimpPCR(
@@ -31,6 +32,10 @@ arma::dmat RelimpPCR(
         tsquared, 
         normalized_data.first["train"]
     );
+
+    if (!ok) {
+        throw std::runtime_error("pca decomposition failed");
+    }
 
     return normalized_data.first["train"];
 }
