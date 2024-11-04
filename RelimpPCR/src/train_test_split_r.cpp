@@ -11,14 +11,12 @@ Rcpp::List train_test_split_r(Rcpp::NumericMatrix x, Rcpp::NumericVector y, doub
     arma::dmat x_arma = Rcpp::as<arma::dmat>(x);
     arma::dvec y_arma = Rcpp::as<arma::dvec>(y);
 
-    arma::uword n = y_arma.n_elem;
-
-    auto result = train_test_split(x_arma, y_arma, train_size);
+    SplitData result = train_test_split(x_arma, y_arma, train_size);
 
     return Rcpp::List::create(
-        Rcpp::Named("x_train") = result.first["train"],
-        Rcpp::Named("x_test") = result.first["test"],
-        Rcpp::Named("y_train") = result.second["train"],
-        Rcpp::Named("y_test") = result.second["test"]
+        Rcpp::Named("x_train") = result.x["train"],
+        Rcpp::Named("x_test") = result.x["test"],
+        Rcpp::Named("y_train") = result.y["train"],
+        Rcpp::Named("y_test") = result.y["test"]
     );
 }

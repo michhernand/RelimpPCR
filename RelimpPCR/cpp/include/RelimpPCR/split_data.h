@@ -1,10 +1,10 @@
-#ifndef TRAIN_TEST_SPLIT_H
-#define TRAIN_TEST_SPLIT_H
+#ifndef SPLIT_DATA_H
+#define SPLIT_DATA_H
 
 #include <armadillo>
-#include <utility>
 #include <unordered_map>
 #include <string>
+#include "RelimpPCR/split_data.h"
 
 class SplitData {
 public:
@@ -14,12 +14,7 @@ public:
     SplitData(
         const std::unordered_map<std::string, arma::dmat>& x_data,
         const std::unordered_map<std::string, arma::dvec>& y_data
-    );
+    ) : x(x_data), y(y_data) {};
 };
-
-
-SplitData train_test_split(const arma::dmat& x, const arma::dvec& y, double train_size);
-
-
 
 #endif

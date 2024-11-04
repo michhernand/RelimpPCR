@@ -10,20 +10,14 @@ Rcpp::List split_and_normalize_r(Rcpp::NumericMatrix x, Rcpp::NumericVector y, d
     arma::dmat x_arma = Rcpp::as<arma::dmat>(x);
     arma::dvec y_arma = Rcpp::as<arma::dvec>(y);
 
-    std::pair<
-        std::unordered_map<std::string, arma::dmat>,
-        std::unordered_map<std::string, arma::dvec>
-    > split_data = train_test_split(x_arma, y_arma, train_size);
+    SplitData split_data = train_test_split(x_arma, y_arma, train_size);
 
-    std::pair<
-        std::unordered_map<std::string, arma::dmat>,
-        std::unordered_map<std::string, arma::dvec>
-    > normalized_data = normalize(split_data);
+    SplitData normalized_data = normalize(split_data);
 
     return Rcpp::List::create(
-        Rcpp::Named("x_train") = Rcpp::wrap(normalized_data.first["train"]),
-        Rcpp::Named("x_test") = Rcpp::wrap(normalized_data.first["test"]),
-        Rcpp::Named("y_train") = Rcpp::wrap(normalized_data.second["train"]),
-        Rcpp::Named("y_test") = Rcpp::wrap(normalized_data.second["test"])
+        Rcpp::Named("x_train") = Rcpp::wrap(normalized_data.x["train"]),
+        Rcpp::Named("x_test") = Rcpp::wrap(normalized_data.x["test"]),
+        Rcpp::Named("y_train") = Rcpp::wrap(normalized_data.y["train"]),
+        Rcpp::Named("y_test") = Rcpp::wrap(normalized_data.y["test"])
     );
 }

@@ -1,6 +1,7 @@
 #define ARMA_64BIT_WORD
 #include <armadillo>
 #include <tuple>
+#include "train_test_split.h"
 
 std::tuple<arma::dvec, double, double> normalize_vector(
     arma::dvec x
@@ -87,17 +88,11 @@ arma::dmat normalize_df_pred(
     return df;
 }
 
-std::pair<
-    std::unordered_map<std::string, arma::dmat>,
-    std::unordered_map<std::string, arma::dvec>
-> normalize(
-    std::pair<
-        std::unordered_map<std::string, arma::dmat>,
-        std::unordered_map<std::string, arma::dvec>
-    > split_data
+SplitData normalize(
+    SplitData split_data
 ) {
-    std::unordered_map<std::string, arma::dmat> x_split = split_data.first;
-    std::unordered_map<std::string, arma::dvec> y_split = split_data.second;
+    std::unordered_map<std::string, arma::dmat> x_split = split_data.x;
+    std::unordered_map<std::string, arma::dvec> y_split = split_data.y;
 
     // X-TRAIN
     std::pair<
@@ -140,8 +135,5 @@ std::pair<
     y_norm["train"] = std::get<0>(y_train_norm_payload);
     y_norm["test"] = y_test_norm;
 
-    return std::make_pair(
-        x_norm,
-        y_norm
-    );
+    return SplitData(x_norm, y_norm);
 }

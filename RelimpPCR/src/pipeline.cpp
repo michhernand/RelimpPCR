@@ -10,15 +10,8 @@ int RelimpPCR(
     arma::dvec y,
     double train_size
 ) {
-    std::pair<
-        std::unordered_map<std::string, arma::dmat>,
-        std::unordered_map<std::string, arma::dvec>
-    > split_data = train_test_split(x, y, train_size);
-
-    std::pair<
-        std::unordered_map<std::string, arma::dmat>,
-        std::unordered_map<std::string, arma::dvec>
-    > normalized_data = normalize(split_data);
+    SplitData split_data = train_test_split(x, y, train_size);
+    SplitData normalized_data = normalize(split_data);
 
     // arma::mat coeff;
     // arma::mat score;

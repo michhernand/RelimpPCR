@@ -1,8 +1,7 @@
-#define ARMA_64BIT_WORD
 #include <armadillo>
 #include <utility>
 #include <unordered_map>
-#include "train_test_split.h"
+#include "RelimpPCR/split_data.h"
 
 /**
 * @brief Splits a dataset into train and test portions.

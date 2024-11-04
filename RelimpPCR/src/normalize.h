@@ -2,6 +2,7 @@
 #define NORMALIZE_H
 #define AMRA_64BIT_WORD
 #include <armadillo>
+#include "train_test_split.h"
 
 std::tuple<arma::dvec, double, double> normalize_vector(arma::dvec);
 
@@ -31,14 +32,8 @@ arma::dmat normalize_df_pred(
     >
 );
 
-std::pair<
-    std::unordered_map<std::string, arma::dmat>,
-    std::unordered_map<std::string, arma::dvec>
-> normalize(
-    std::pair<
-        std::unordered_map<std::string, arma::dmat>,
-        std::unordered_map<std::string, arma::dvec>
-    >
+SplitData normalize(
+    SplitData split_data
 );
 
 #endif
