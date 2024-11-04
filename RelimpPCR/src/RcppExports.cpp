@@ -24,6 +24,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// backwards_step_princomp_r
+Rcpp::List backwards_step_princomp_r(Rcpp::NumericMatrix x);
+RcppExport SEXP _RelimpPCR_backwards_step_princomp_r(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(backwards_step_princomp_r(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // RelimpPCR
 Rcpp::NumericMatrix RelimpPCR(Rcpp::NumericMatrix x, Rcpp::NumericVector y, double train_size);
 RcppExport SEXP _RelimpPCR_RelimpPCR(SEXP xSEXP, SEXP ySEXP, SEXP train_sizeSEXP) {
@@ -53,6 +64,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RelimpPCR_split_and_normalize_r", (DL_FUNC) &_RelimpPCR_split_and_normalize_r, 3},
+    {"_RelimpPCR_backwards_step_princomp_r", (DL_FUNC) &_RelimpPCR_backwards_step_princomp_r, 1},
     {"_RelimpPCR_RelimpPCR", (DL_FUNC) &_RelimpPCR_RelimpPCR, 3},
     {"_RelimpPCR_train_test_split_r", (DL_FUNC) &_RelimpPCR_train_test_split_r, 3},
     {NULL, NULL, 0}

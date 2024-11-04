@@ -1,5 +1,6 @@
 #ifndef NORMALIZE_H
 #define NORMALIZE_H
+#define AMRA_64BIT_WORD
 #include <armadillo>
 
 std::tuple<arma::dvec, double, double> normalize_vector(arma::dvec);

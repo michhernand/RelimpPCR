@@ -5,6 +5,10 @@ split_and_normalize_r <- function(x, y, train_size) {
     .Call(`_RelimpPCR_split_and_normalize_r`, x, y, train_size)
 }
 
+backwards_step_princomp_r <- function(x) {
+    .Call(`_RelimpPCR_backwards_step_princomp_r`, x)
+}
+
 RelimpPCR <- function(x, y, train_size) {
     .Call(`_RelimpPCR_RelimpPCR`, x, y, train_size)
 }

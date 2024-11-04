@@ -8,10 +8,7 @@ std::tuple<
     arma::vec,
     arma::vec
 > backwards_step_princomp(
-    std::pair<
-        std::unordered_map<std::string, arma::dmat>,
-        std::unordered_map<std::string, arma::dvec>
-    > normalized_data
+    arma::dmat x
 ) {
     arma::mat coeff;
     arma::mat score;
@@ -19,17 +16,20 @@ std::tuple<
     arma::vec tsquared;
 
     bool ok = false;
-    arma::dmat x = normalized_data.first["train"];
 
     for (arma::uword i = 0; i < x.n_cols; i++) {
-        arma::dmat subset = x.head_cols(x.n_cols - i);
+        arma::uword subset_ix = x.n_cols - i;
+        if (subset_ix <= 1) {
+            throw std::runtime_error("backwards step pca decomposition failed");
+        }
+        arma::dmat subset = x.head_cols(subset_ix);
         
         ok = arma::princomp(
             coeff, 
             score, 
             latent, 
             tsquared, 
-            x
+            subset
         );
 
         if (ok) {
@@ -40,6 +40,9 @@ std::tuple<
     if (!ok) {
         throw std::runtime_error("backwards step pca decomposition failed");
     }
+
+    std::cout << "Coef Col x Row: " << coeff.n_cols << " x " << coeff.n_rows << std::endl;
+    std::cout << "Score Col x Row: " << score.n_cols << " x " << score.n_rows << std::endl;
 
     return std::make_tuple(
         coeff, 

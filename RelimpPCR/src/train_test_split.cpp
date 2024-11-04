@@ -3,6 +3,16 @@
 #include <utility>
 #include <unordered_map>
 
+class SplitData {
+    public:
+        std::unordered_map<std::string, arma::dmat> x;
+        std::unordered_map<std::string, arma::dvec> y;
+        SplitData(
+            const std::unordered_map<std::string, arma::dmat> x,
+            const std::unordered_map<std::string, arma::dvec> y
+        ) : x(x), y(y) {}
+};
+
 /**
 * @brief Splits a dataset into train and test portions.
 * @param n The size of the collection to be split.
@@ -48,14 +58,12 @@ std::unordered_map<std::string, arma::dvec> train_test_split_array(
     return result;
 }
 
-std::pair<
-    std::unordered_map<std::string, arma::dmat>,
-    std::unordered_map<std::string, arma::dvec>
-> train_test_split(const arma::dmat& x, const arma::dvec& y, double train_size) {
+SplitData train_test_split(const arma::dmat& x, const arma::dvec& y, double train_size) {
     arma::uword nn = y.n_elem;
     std::pair<arma::uvec, arma::uvec> indices = get_train_test_split_indices(nn, train_size);
 
     std::unordered_map<std::string, arma::dmat> x_split = train_test_split_df(x, indices.first, indices.second);
     std::unordered_map<std::string, arma::dvec> y_split = train_test_split_array(y, indices.first, indices.second);
-    return std::make_pair(x_split, y_split);
+
+    return SplitData(x_split, y_split);
 }

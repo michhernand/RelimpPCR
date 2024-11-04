@@ -1,11 +1,11 @@
 #define ARMA_64BIT_WORD
-#include "Rcpp.h"
 #include "train_test_split.h"
 #include "normalize.h"
 #include <armadillo>
 #include <unordered_map>
+#include <tuple>
 
-arma::dmat RelimpPCR(
+int RelimpPCR(
     arma::dmat x,
     arma::dvec y,
     double train_size
@@ -20,22 +20,28 @@ arma::dmat RelimpPCR(
         std::unordered_map<std::string, arma::dvec>
     > normalized_data = normalize(split_data);
 
-    arma::mat coeff;
-    arma::mat score;
-    arma::vec latent;
-    arma::vec tsquared;
-
-    bool ok = arma::princomp(
-        coeff, 
-        score, 
-        latent, 
-        tsquared, 
-        normalized_data.first["train"]
-    );
-
-    if (!ok) {
-        throw std::runtime_error("pca decomposition failed");
-    }
-
-    return normalized_data.first["train"];
+    // arma::mat coeff;
+    // arma::mat score;
+    // arma::vec latent;
+    // arma::vec tsquared;
+    //
+    // bool ok = arma::princomp(
+    //     coeff, 
+    //     score, 
+    //     latent, 
+    //     tsquared, 
+    //     normalized_data.first["train"]
+    // );
+    //
+    // if (!ok) {
+    //     throw std::runtime_error("pca decomposition failed");
+    // }
+    //
+    // return std::make_tuple(
+    //     coeff,
+    //     score,
+    //     latent,
+    //     tsquared
+    // );
+    return 0;
 }
