@@ -22,6 +22,13 @@ std::pair<arma::uvec, arma::uvec> get_train_test_split_indices(arma::uword n, do
     return std::make_pair(train_indices, test_indices);
 }
 
+/**
+ * @brief Splits a dataframe into train and test portions.
+ * @param df The dataframe to split.
+ * @param train_ix The dataframe row indices for the train dataset.
+ * @param test_ix The dataframe row indices for the test dataset.
+ * @return An unordered map, mapping train/test labels to dataframes.
+*/
 std::unordered_map<std::string, arma::dmat> train_test_split_df(
     arma::dmat df,
     arma::uvec train_ix,
@@ -37,6 +44,13 @@ std::unordered_map<std::string, arma::dmat> train_test_split_df(
     return result;
 }
 
+/**
+ * @brief Splits a vector into train and test portions.
+ * @param df The vector to split.
+ * @param train_ix The vector indices for the train dataset.
+ * @param test_ix The vector indices for the test dataset.
+ * @return An unordered map, mapping train/test labels to vectors.
+*/
 std::unordered_map<std::string, arma::dvec> train_test_split_array(
     arma::dvec y,
     arma::uvec train_ix,
