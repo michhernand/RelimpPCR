@@ -2,7 +2,7 @@
 #define NORMALIZE_H
 #define AMRA_64BIT_WORD
 #include <armadillo>
-#include "train_test_split.h"
+#include "split_data.h"
 
 std::tuple<arma::dvec, double, double> normalize_vector(arma::dvec);
 

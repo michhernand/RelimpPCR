@@ -2,7 +2,7 @@
 #include <armadillo>
 #include <utility>
 #include <unordered_map>
-#include "train_test_split.h"
+#include "split_data.h"
 
 /**
 * @brief Splits a dataset into train and test portions.

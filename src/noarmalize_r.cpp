@@ -3,6 +3,7 @@
 #include <tuple>
 #include "normalize.h"
 #include "train_test_split.h"
+#include "split_data.h"
 // [[Rcpp::depends(RcppArmadillo)]]
 
 // [[Rcpp::export]]

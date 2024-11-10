@@ -1,7 +1,7 @@
 #define ARMA_64BIT_WORD
 #include <armadillo>
 #include <tuple>
-#include "train_test_split.h"
+#include "split_data.h"
 
 std::tuple<arma::dvec, double, double> normalize_vector(
     arma::dvec x

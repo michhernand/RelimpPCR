@@ -13,5 +13,5 @@ Rcpp::NumericMatrix RelimpPCR(
     arma::dmat x_arma = Rcpp::as<arma::dmat>(x);
     arma::dvec y_arma = Rcpp::as<arma::dvec>(y);
 
-    return Rcpp::wrap(RelimpPCR(x_arma, y_arma, train_size));
+    return RelimpPCR(x_arma, y_arma, train_size);
 }

@@ -1,10 +1,10 @@
+
 #ifndef SPLIT_DATA_H
 #define SPLIT_DATA_H
 
+#include <string>
 #include <armadillo>
 #include <unordered_map>
-#include <string>
-#include "RelimpPCR/split_data.h"
 
 class SplitData {
 public:
@@ -16,5 +16,7 @@ public:
         const std::unordered_map<std::string, arma::dvec>& y_data
     ) : x(x_data), y(y_data) {};
 };
+
+
 
 #endif
