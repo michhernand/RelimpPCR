@@ -21,6 +21,9 @@ class LastRelimpAlgorithm : public RelimpAlgorithm {
       }
 };
 
+arma::dmat reordered_mat(mat.n_rows, mat.n_cols);
+
+
 amra::dvec remove_col(arma::dmat x, arma::uword col) {
     arma::dmat mat_excluded;
 
@@ -32,6 +35,7 @@ amra::dvec remove_col(arma::dmat x, arma::uword col) {
     }
     return mat_excluded;
 }
+
 
 // TODO: Return sorted_mat and indices.
 arma::dmat argsort_matrix(const arma::dmat& mat, const arma::vec& keys) {
