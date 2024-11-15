@@ -1,14 +1,9 @@
-//
-// Created by Michael Hernandez on 11/12/24.
-//
-
 #ifndef MODEL_H
 #define MODEL_H
 
 #include <armadillo>
 
-class Model {
-  public:
+struct Model {
     arma::dvec coefficients;
     arma::dvec fitted_values;
     arma::dvec residuals;
@@ -21,5 +16,7 @@ class Model {
         const double r_squared
     ) : coefficients(coefficients), fitted_values(fitted_values), residuals(residuals), r_squared(r_squared) {};
 };
+
+Model lm(arma::dmat x, arma::dvec y);
 
 #endif //MODEL_H
