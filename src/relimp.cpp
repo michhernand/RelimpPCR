@@ -2,16 +2,19 @@
 #include <unordered_map>
 #include <stdexcept>
 #include <armadillo>
-#include <model.h>
+#include "model.h"
+#include "matutils.h"
+#include "column_contribution.h"
 
 class RelimpAlgorithm {
   public:
       virtual arma::uvec sort(arma::dmat x, arma::dvec y) = 0;
+      virtual arma::uword n_iter(arma::dmat x) = 0;
 };
 
 class LastRelimpAlgorithm : public RelimpAlgorithm {
   public:
-      arma::dmat sort(arma::dmat x, arma::dvec y) {
+      arma::dmat sort(arma::dmat x, arma::dvec y) override {
           double r_squared_arr[x.n_cols];
           for (arma::uword i = 0; i < x.n_cols; ++i) {
             r_squared_arr[i] = lm(remove_col(x, i), y).r_squared;
@@ -19,62 +22,52 @@ class LastRelimpAlgorithm : public RelimpAlgorithm {
 
           return argsort_matrix(x, r_squared_arr);
       }
+
+      /**
+	* @brief Gathers r-squared values evaluating the importance of a single value of x.
+	* @param x The x matrix (independent variables) of the model.
+	* @param y The y vector (dependent variable) of the model.
+	* @param column_index The column being evaluated.
+	* @return A ColumnContribution object tracking the columns importance.
+	*/
+      ColumnContribution evaluate_column(
+          arma::dmat x,
+          arma::dvec y,
+          arma::uword column_index
+      ) override {
+        auto permutations = last_permutations(x.n_cols, column_index);
+        auto cc = ColumnContribution(column_index, permutations.size());
+
+        for (arma::uword i = 0; i < permutations.size(); ++i) {
+          perm_x_ix = permutations[i];
+          perm_x = x.cols(perm_x_ix);
+
+          dual_lm_cc(
+		x.col(column_index),
+                perm_x,
+                y, cc
+          );
+        }
+
+        return cc
+      }
+
+
 };
 
 arma::dmat reordered_mat(mat.n_rows, mat.n_cols);
 
 
-amra::dvec remove_col(arma::dmat x, arma::uword col) {
-    arma::dmat mat_excluded;
-
-    if (col > 0) {
-        mat_excluded = mat.cols(0, col - 1);  // Columns before the excluded column
-    }
-    if (col < mat.n_cols - 1) {
-        mat_excluded = arma::join_rows(mat_excluded, mat.cols(col + 1, mat.n_cols - 1));
-    }
-    return mat_excluded;
-}
-
-
-// TODO: Return sorted_mat and indices.
-arma::dmat argsort_matrix(const arma::dmat& mat, const arma::vec& keys) {
-    if (keys.n_elem != mat.n_cols) {
-        throw std::invalid_argument("Size of keys vector must match the number of columns in the matrix.");
-    }
-
-    arma::uvec indices = arma::regspace<arma::uvec>(0, keys.n_elem - 1);  // [0, 1, ..., n_cols-1]
-    indices = arma::sort_index(keys);
-
-    arma::dmat sorted_mat(mat.n_rows, mat.n_cols);
-    for (arma::uword i = 0; i < indices.n_elem; ++i) {
-        sorted_mat.col(i) = mat.col(indices[i]);
-    }
-
-    return sorted_mat;
-}
-
-Model lm(
-    arma::dmat x,
-    arma::dvec y
-) {
-     arma::vec beta = arma::solve(x, y);
-     arma::vec y_pred = x * beta;
-     arma::vec residuals = y - y_pred;
-
-     double ss_res = arma::accu(arma::square(residuals));
-     double ss_tot = arma::accu(arma::square(y - arma::mean(y)));
-     double r_squared = 1 - (ss_res / ss_tot);
-
-     return Model(
-         beta, y_pred, residuals, r_squared
-     );
-}
 
 void Relimp(
     arma::dmat x,
     arma::dvec y,
-    std::string algorithm
+    RelimpAlgorithm algo
 ) {
-
+	std::vector<ColumnContribution> contributions;
+        contributions.resize(x.n_cols, ColumnContribution(0, 0));
+        for (arma::uword i = 0; i < x.n_cols; ++i) {
+        	cc = ColumnContribution(i, algo.n_iter
+        	contributions[i] = ColumnContribution(i, algo.n_iter(x));
+        }
 }
