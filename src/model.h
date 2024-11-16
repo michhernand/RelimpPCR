@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <armadillo>
+#include "column_contribution.h"
 
 struct Model {
     arma::dvec coefficients;
@@ -17,6 +18,8 @@ struct Model {
     ) : coefficients(coefficients), fitted_values(fitted_values), residuals(residuals), r_squared(r_squared) {};
 };
 
-Model lm(arma::dmat x, arma::dvec y);
+Model basic_lm(const arma::dmat& x, const arma::dvec& y);
+std::pair<Model, Model> dual_lm(const arma::dvec& toggle_vec, const arma::dmat& x, const arma::dvec& y);
+void dual_lm_cc(const arma::dvec& toggle_vec, const arma::dmat& x, const arma::dvec& y, ColumnContribution& cc);
 
 #endif //MODEL_H

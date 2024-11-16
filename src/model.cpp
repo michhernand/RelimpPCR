@@ -1,9 +1,9 @@
 #include <utility>
 #include <armadillo>
 #include "model.h"
-#include "column_contribution"
+#include "column_contribution.h"
 
-Model lm(
+Model basic_lm(
     const arma::dmat& x,
     const arma::dvec& y
 ) {
@@ -32,10 +32,11 @@ std::pair<Model, Model> dual_lm(
     const arma::dmat& x,
     const arma::dvec& y
 ) {
-    Model mod_without_column = lm(x, y);
+    Model mod_without_column = basic_lm(x, y);
 
-    const arma::dmat xx = x.insert_cols(x.n_cols, toggle_vec);
-    Model mod_with_column = lm(x, y);
+    arma::dmat xx = x;
+    xx.insert_cols(xx.n_cols, toggle_vec);
+    Model mod_with_column = basic_lm(xx, y);
     return std::make_pair(mod_with_column, mod_without_column);
 }
 
@@ -50,8 +51,8 @@ void dual_lm_cc(
     const arma::dvec& toggle_vec,
     const arma::dmat& x,
     const arma::dvec& y,
-    ColumnContribution& cc,
+    ColumnContribution& cc
 ) {
-    std::pair<Model, Model> models = dual_lm(toggle_index, x, y);
+    std::pair<Model, Model> models = dual_lm(toggle_vec, x, y);
     cc.set_next(models.first.r_squared, models.second.r_squared);
 }

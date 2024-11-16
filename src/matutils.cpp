@@ -2,7 +2,7 @@
 #include <vector>
 #include <utility>
 
-amra::dmat remove_col(arma::dmat x, arma::uword col) {
+arma::dmat remove_col(arma::dmat mat, arma::uword col) {
     arma::dmat mat_excluded;
 
     if (col > 0) {

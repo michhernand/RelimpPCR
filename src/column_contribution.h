@@ -16,10 +16,10 @@ class ColumnContribution {
     ColumnContribution(arma::uword column, arma::uword n);
 
     void set_at(double with_val, double without_val, arma::uword i);
-    void set_next(double with_val, double_without_val);
+    void set_next(double with_val, double without_val);
     double get_mean_with_column();
     double get_mean_without_column();
     double get_lift();
-}
+};
 
 #endif //COLUMN_CONTRIBUTION_H

@@ -9,12 +9,18 @@
 
 class RelimpAlgorithm {
   public:
-      virtual arma::uvec sort(arma::dmat x, arma::dvec y) = 0;
       virtual arma::uword n_iter(arma::dmat x) = 0;
+      virtual ColumnContribution evaluate_column(arma::dmat x, arma::dvec y, arma::uword column_index) = 0;
+      virtual std::vector<ColumnContribution> evaluate_columns(arma::dmat x, arma::dvec y) = 0;
+      virtual std::pair<arma::uvec, arma::dvec> sort_columns(arma::dmat x, arma::dvec y) = 0;
 };
 
 class LastRelimpAlgorithm : public RelimpAlgorithm {
   public:
+        arma::uword n_iter(arma::dmat x) override {
+                return x.n_cols;
+        }
+
       /**
 	* @brief Gathers r-squared values evaluating the importance of a single value of x.
 	* @param x The x matrix (independent variables) of the model.
@@ -31,8 +37,8 @@ class LastRelimpAlgorithm : public RelimpAlgorithm {
         auto cc = ColumnContribution(column_index, permutations.size());
 
         for (arma::uword i = 0; i < permutations.size(); ++i) {
-          perm_x_ix = permutations[i];
-          perm_x = x.cols(perm_x_ix);
+          auto perm_x_ix = permutations[i];
+          auto perm_x = x.cols(perm_x_ix);
 
           dual_lm_cc(
 		x.col(column_index),
@@ -76,7 +82,7 @@ class LastRelimpAlgorithm : public RelimpAlgorithm {
           result_avgs[i] = result[i].get_lift();
         }
 
-        arma::uvec result_order = argsort_array(result_avgs&, true)
+        arma::uvec result_order = argsort_array(result_avgs, true);
         return std::make_pair(result_order, result_avgs(result_order));
       }
 };
@@ -87,12 +93,12 @@ class LastRelimpAlgorithm : public RelimpAlgorithm {
 void Relimp(
     arma::dmat x,
     arma::dvec y,
-    RelimpAlgorithm algo
+    LastRelimpAlgorithm algo
 ) {
 	std::vector<ColumnContribution> contributions;
         contributions.resize(x.n_cols, ColumnContribution(0, 0));
         for (arma::uword i = 0; i < x.n_cols; ++i) {
-        	cc = ColumnContribution(i, algo.n_iter
+        	auto cc = ColumnContribution(i, algo.n_iter(x));
         	contributions[i] = ColumnContribution(i, algo.n_iter(x));
         }
 }
