@@ -1,8 +1,9 @@
 #define ARMA_64BIT_WORD
-#include <unordered_map>
-#include <stdexcept>
 #include <armadillo>
+#include <utility>
+#include <vector>
 #include "model.h"
+#include "sort.h"
 #include "matutils.h"
 #include "column_contribution.h"
 
@@ -14,15 +15,6 @@ class RelimpAlgorithm {
 
 class LastRelimpAlgorithm : public RelimpAlgorithm {
   public:
-      arma::dmat sort(arma::dmat x, arma::dvec y) override {
-          double r_squared_arr[x.n_cols];
-          for (arma::uword i = 0; i < x.n_cols; ++i) {
-            r_squared_arr[i] = lm(remove_col(x, i), y).r_squared;
-          }
-
-          return argsort_matrix(x, r_squared_arr);
-      }
-
       /**
 	* @brief Gathers r-squared values evaluating the importance of a single value of x.
 	* @param x The x matrix (independent variables) of the model.
@@ -48,14 +40,47 @@ class LastRelimpAlgorithm : public RelimpAlgorithm {
                 y, cc
           );
         }
-
-        return cc
+        return cc;
       }
 
+	/**
+	* @brief Gathers r-squared values evaluating the importance of all x columns.
+	* @param x The x matrix (independent variables) of the model.
+	* @param y The y vector (dependent variable) of the model.
+	* @return A vector of ColumnContribution objects (one per x column).
+	*/
+	std::vector<ColumnContribution> evaluate_columns(
+	    arma::dmat x,
+	    arma::dvec y
+	) override {
+		std::vector<ColumnContribution> ccs;
+		ccs.resize(x.n_cols, ColumnContribution(0, 0));
 
+		for (arma::uword i = 0; i < x.n_cols; ++i) {
+			ccs[i] = evaluate_column(x, y, i);
+		}
+		return ccs;
+      }
+
+      	/**
+	* @brief Gathers averaged r-squared values evaluating the importance of all x columns.
+	* @param x The x matrix (independent variables) of the model.
+	* @param y The y vector (dependent variable) of the model.
+	* @return A pair containing a) the column indexes sorted most important to least important, and b) the average r-squared lift for those columns.
+	*/
+      std::pair<arma::uvec, arma::dvec> sort_columns(arma::dmat x, arma::dvec y) override {
+        auto result = evaluate_columns(x, y);
+
+        arma::dvec result_avgs(result.size());
+        for (arma::uword i = 0; i < result.size(); ++i) {
+          result_avgs[i] = result[i].get_lift();
+        }
+
+        arma::uvec result_order = argsort_array(result_avgs&, true)
+        return std::make_pair(result_order, result_avgs(result_order));
+      }
 };
 
-arma::dmat reordered_mat(mat.n_rows, mat.n_cols);
 
 
 
