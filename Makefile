@@ -19,7 +19,7 @@ ALL_LIBS = $(EXTERNAL_LIBS)
 build:
 	Rscript -e "Rcpp::compileAttributes()"
 	R CMD build .
-	R CMD INSTALL RelimpPCR_1.0.tar.gz
+	R CMD INSTALL --clean --verbose RelimpPCR_1.0.tar.gz
 
 clean:
 	rm -f RelimpPCR_*.tar.gz
@@ -31,3 +31,4 @@ test:
 	Rscript -e "RelimpPCR::split_and_normalize_r(as.matrix(mtcars), as.vector(mtcars[,3]), 0.7)"
 	# Rscript -e "RelimpPCR::RelimpPCR(as.matrix(mtcars), as.vector(mtcars[,3]), 0.7)"
 	Rscript -e "RelimpPCR::backwards_step_princomp_r(as.matrix(mtcars))"
+	Rscript -e "RelimpPCR::remove_col_r(as.matrix(mtcars))"

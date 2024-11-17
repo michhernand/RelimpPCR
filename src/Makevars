@@ -1,0 +1,21 @@
+# Set the Fortran compiler paths and libraries
+FC = /opt/homebrew/bin/gfortran
+F77 = /opt/homebrew/bin/gfortran
+FLIBS = -L/opt/homebrew/opt/gcc/lib/gcc/14 -lgfortran -lquadmath -lm
+
+# Override LAPACK and BLAS libraries
+LAPACK_LIBS = -L/opt/homebrew/opt/openblas/lib -lopenblas
+BLAS_LIBS = -L/opt/homebrew/opt/openblas/lib -lopenblas
+
+# Compiler flags
+PKG_CXXFLAGS = -std=gnu++17
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+# Source files
+SOURCES = $(wildcard *.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+
+all: $(SHLIB)
+
+$(SHLIB): $(OBJECTS)
+

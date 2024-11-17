@@ -11,6 +11,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// remove_col_r
+void remove_col_r(Rcpp::NumericMatrix x, int mcol);
+RcppExport SEXP _RelimpPCR_remove_col_r(SEXP xSEXP, SEXP mcolSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type mcol(mcolSEXP);
+    remove_col_r(x, mcol);
+    return R_NilValue;
+END_RCPP
+}
 // split_and_normalize_r
 Rcpp::List split_and_normalize_r(Rcpp::NumericMatrix x, Rcpp::NumericVector y, double train_size);
 RcppExport SEXP _RelimpPCR_split_and_normalize_r(SEXP xSEXP, SEXP ySEXP, SEXP train_sizeSEXP) {
@@ -63,6 +74,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_RelimpPCR_remove_col_r", (DL_FUNC) &_RelimpPCR_remove_col_r, 2},
     {"_RelimpPCR_split_and_normalize_r", (DL_FUNC) &_RelimpPCR_split_and_normalize_r, 3},
     {"_RelimpPCR_backwards_step_princomp_r", (DL_FUNC) &_RelimpPCR_backwards_step_princomp_r, 1},
     {"_RelimpPCR_RelimpPCR", (DL_FUNC) &_RelimpPCR_RelimpPCR, 3},
